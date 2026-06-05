@@ -725,15 +725,27 @@ function dimKey(s,dim){
   return '-';
 }
 
+function planEntriesInPeriod(){
+  const months=periodMonths();
+  const owners=revOwner==='all'?OWNERS:[revOwner];
+  const out=[];
+  owners.forEach(o=>{
+    months.forEach(mi=>{
+      const key=revYear+'-'+(mi+1);
+      const arr=(settings.planByOwner[o]&&settings.planByOwner[o][key])||[];
+      arr.forEach(p=>{
+        const u=p.product==='테라도 비용정산'?(Number(p.directUsd)||0):(Number(p.qty)||0)*(Number(p.price)||0);
+        out.push({owner:o,team:TEAM[o]||'-',country:p.country||'-',cat1:p.cat1||'-',cat2:p.cat2||cat2OfProduct(p.product)||'-',client:p.client||'-',item:p.product||'-',usdAmt:u,krwAmt:u*settings.planRate});
+      });
+    });
+  });
+  return out;
+}
+
 function breakdownByDim(dim){
   const months=periodMonths();
-  // plan total (per owner) for the period
-  const ownersForPlan=revOwner==='all'?OWNERS:[revOwner];
-  // Plan only has owner dimension; for non-owner/team dims we show "—"
-  const planByOwner={};
-  ownersForPlan.forEach(o=>{planByOwner[o]=months.reduce((a,mi)=>a+planUsdFor(o,mi),0);});
-
   const groups={};
+  // Shipment-based est/act
   state.forEach(s=>{
     if(revOwner!=='all'&&s.owner!==revOwner)return;
     const mi=shipmentMonth(s);if(mi<0||!months.includes(mi))return;
@@ -742,13 +754,13 @@ function breakdownByDim(dim){
     groups[k].estUsd+=u;groups[k].estKrw+=kr;
     if(isShipped(s)){groups[k].actUsd+=u;groups[k].actKrw+=kr;}
   });
-  // Map plan totals by dim if dim is owner/team
-  if(dim==='owner'){
-    Object.entries(planByOwner).forEach(([o,u])=>{if(!groups[o])groups[o]={estUsd:0,estKrw:0,actUsd:0,actKrw:0,planUsd:0,planKrw:0};groups[o].planUsd=u;groups[o].planKrw=u*settings.planRate;});
-  }else if(dim==='team'){
-    Object.entries(planByOwner).forEach(([o,u])=>{const t=TEAM[o]||'-';if(!groups[t])groups[t]={estUsd:0,estKrw:0,actUsd:0,actKrw:0,planUsd:0,planKrw:0};groups[t].planUsd+=u;groups[t].planKrw+=u*settings.planRate;});
-  }
-  return Object.entries(groups).sort((a,b)=>b[1].estKrw-a[1].estKrw);
+  // Plan-based aggregation across all dims
+  planEntriesInPeriod().forEach(p=>{
+    const k=p[dim]||'-';
+    if(!groups[k])groups[k]={estUsd:0,estKrw:0,actUsd:0,actKrw:0,planUsd:0,planKrw:0};
+    groups[k].planUsd+=p.usdAmt;groups[k].planKrw+=p.krwAmt;
+  });
+  return Object.entries(groups).sort((a,b)=>(b[1].planKrw+b[1].estKrw)-(a[1].planKrw+a[1].estKrw));
 }
 
 function renderRevenue(){
