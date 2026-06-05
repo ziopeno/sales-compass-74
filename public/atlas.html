@@ -711,10 +711,59 @@ function renderRevenue(){
     </div>
 
     <div class="panel">
+      <div class="panel-head"><h3>담당자 · 품목별 목표 달성률 <span style="color:var(--ink-faint);font-weight:400;font-size:12px">(${revGran==='month'?(today.getMonth()+1)+'월':revGran==='quarter'?'Q'+(Math.floor(today.getMonth()/3)+1):revYear+'년'} 기준)</span></h3></div>
+      ${ownerItemPanel()}
+    </div>
+
+    <div class="panel">
       <div class="panel-head"><h3>${ownerForPlan}의 계획 매출 입력 <span style="color:var(--ink-faint);font-weight:400;font-size:12px">(월별 USD · 계획환율로 원화 환산)</span></h3></div>
       <div class="plan-grid">${planCells}</div>
     </div>`;
   updateChip();}
+
+function ownerItemPanel(){
+  const Y=revYear;
+  const inP=(mi)=>{if(revGran==='year')return true;if(revGran==='quarter')return Math.floor(mi/3)===Math.floor(today.getMonth()/3);return mi===today.getMonth();};
+  const map={};
+  state.forEach(s=>{
+    if(revOwner!=='all'&&s.owner!==revOwner)return;
+    const st=META[s.status].stage;const d=(st==='factory'||st==='port')?s.etd:(s.atd||s.etd);
+    if(!d)return;const dt=new Date(d+'T00:00:00');if(dt.getFullYear()!==Y||!inP(dt.getMonth()))return;
+    const isAct=st==='sea'||st==='done';const u=usdOf(s);const rate=isAct?(s.shipRate||settings.estRate):settings.estRate;
+    if(!map[s.owner])map[s.owner]={};
+    if(!map[s.owner][s.item])map[s.owner][s.item]={usd:0,krw:0,est:0,act:0};
+    map[s.owner][s.item].usd+=u;
+    map[s.owner][s.item].krw+=isAct?(s.krwActual||u*rate):u*rate;
+    if(isAct)map[s.owner][s.item].act+=u;else map[s.owner][s.item].est+=u;
+  });
+  const planByOwner={};
+  OWNERS.forEach(o=>{const ob=settings.planByOwner[o]||{};let total=0;
+    if(revGran==='month')total=Number(ob[Y+'-'+(today.getMonth()+1)]||0);
+    else if(revGran==='quarter'){const q=Math.floor(today.getMonth()/3);for(let k=0;k<3;k++)total+=Number(ob[Y+'-'+(q*3+k+1)]||0);}
+    else for(let mi=1;mi<=12;mi++)total+=Number(ob[Y+'-'+mi]||0);
+    planByOwner[o]={usd:total,krw:total*settings.planRate};
+  });
+  const list=revOwner==='all'?OWNERS:[revOwner];
+  return list.map(o=>{
+    const items=map[o]||{};const plan=planByOwner[o]||{usd:0,krw:0};
+    const totalKrw=Object.values(items).reduce((a,b)=>a+b.krw,0);
+    const totalUsd=Object.values(items).reduce((a,b)=>a+b.usd,0);
+    const ach=plan.krw?Math.round(totalKrw/plan.krw*100):0;
+    const rows=Object.entries(items).sort((a,b)=>b[1].krw-a[1].krw).map(([item,d])=>{
+      const pct=plan.krw?Math.round(d.krw/plan.krw*100):0;
+      const status=d.act>0&&d.est===0?'실적':d.act>0?'실적+추정':'추정';
+      const sc=d.act>0&&d.est===0?'var(--green)':d.act>0?'var(--teal)':'var(--amber)';
+      return `<tr><td>${item} <span style="font-size:10.5px;color:${sc};font-weight:600;margin-left:4px">${status}</span></td><td>${won(d.krw)}<span class="usd">${usd(d.usd)}</span></td><td><div style="display:flex;align-items:center;justify-content:flex-end;gap:8px"><div class="pgbar"><div class="pgfill" style="width:${Math.min(100,pct)}%"></div></div><span style="font-family:var(--font-mono);font-size:12px;min-width:38px;text-align:right">${pct}%</span></div></td></tr>`;
+    }).join('')||`<tr><td colspan="3" style="color:var(--ink-faint);text-align:center;padding:18px">데이터 없음</td></tr>`;
+    return `<div class="owner-block">
+      <div class="owner-head">
+        <div class="ol"><span class="av">${initials(o)}</span><b>${o}</b><span class="meta">계획 ${won(plan.krw)} · ${usd(plan.usd)} / 실제 ${won(totalKrw)} · ${usd(totalUsd)}</span></div>
+        <span class="ach" style="color:${ach>=100?'var(--green)':ach>=70?'var(--amber)':'var(--red)'}">달성 ${ach}%</span>
+      </div>
+      <table class="rtbl"><thead><tr><th>품목</th><th>매출 (원화/USD)</th><th style="text-align:right">계획 대비 비중</th></tr></thead><tbody>${rows}</tbody></table>
+    </div>`;
+  }).join('');
+}
 
 function buildVenn(v){
   const plan=v.plan,real=v.real;
