@@ -26,7 +26,7 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);line-
 .me-chip{display:flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--line);padding:5px 11px 5px 6px;border-radius:20px;font-size:12.5px;color:var(--ink-soft)}
 .me-chip select{border:none;background:none;font-family:var(--font-body);font-size:12.5px;font-weight:500;color:var(--ink);padding:2px 4px;cursor:pointer;width:auto}
 .me-chip .av{width:22px;height:22px;border-radius:50%;background:var(--navy-700);color:#cfe6f0;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:600}
-.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:20px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:20px;flex-wrap:wrap}
 .tab{font-family:var(--font-display);font-size:14px;font-weight:500;color:var(--ink-faint);background:none;border:none;padding:11px 16px;cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1px;transition:.15s}
 .tab.on{color:var(--ink);border-color:var(--navy-800)}
 
@@ -181,20 +181,15 @@ input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,1
 .rtbl td{padding:10px 12px;text-align:right;font-family:var(--font-mono);font-size:12.5px;border-top:1px solid var(--line-soft)}
 .rtbl td:first-child{text-align:left;font-family:var(--font-body);font-weight:500}
 .rtbl td .usd{display:block;color:var(--ink-faint);font-size:11px}
-.plan-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
-.plan-cell label{font-size:11px;color:var(--ink-faint)}
-.plan-cell input{font-family:var(--font-mono);font-size:12px;text-align:right;padding:6px 8px;margin-top:3px}
-.plan-cell .calc{font-family:var(--font-mono);font-size:10.5px;color:var(--ink-faint);margin-top:3px;text-align:right}
-.owner-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.plan-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.plan-tbl th{font-size:11px;color:var(--ink-faint);font-weight:500;padding:8px 6px;background:var(--line-soft);text-align:left}
+.plan-tbl td{padding:6px;border-top:1px solid var(--line-soft);vertical-align:middle}
+.plan-tbl td input,.plan-tbl td select{padding:6px 8px;font-size:12px}
+.plan-tbl td.num input{font-family:var(--font-mono);text-align:right}
+.plan-tbl td.calc{font-family:var(--font-mono);font-size:11.5px;color:var(--ink-soft);text-align:right;white-space:nowrap}
+.plan-tbl td .calc-usd{color:var(--ink);font-weight:600}
+.owner-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
 .owner-tabs .chip{cursor:pointer}
-.venn-wrap{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:center}
-.venn-svg{width:100%;max-width:520px;height:auto;display:block;margin:0 auto}
-.venn-leg{font-size:13px}
-.venn-leg .row{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-top:1px solid var(--line-soft);font-family:var(--font-mono);font-size:12.5px}
-.venn-leg .row:first-child{border-top:none}
-.venn-leg .row b{font-family:var(--font-body);font-weight:600}
-.venn-item-list{margin-top:14px;display:flex;flex-wrap:wrap;gap:6px}
-.vi-tag{font-size:11.5px;background:var(--line-soft);padding:4px 9px;border-radius:6px;color:var(--ink-soft)}
 .pgbar{display:inline-block;width:140px;height:7px;background:var(--line-soft);border-radius:4px;overflow:hidden;vertical-align:middle}
 .pgfill{height:100%;background:linear-gradient(90deg,var(--teal),#3dd0c0);border-radius:4px;transition:width .4s}
 .owner-block{margin-bottom:22px;padding-bottom:18px;border-bottom:1px dashed var(--line)}
@@ -205,11 +200,17 @@ input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,1
 .owner-head b{font-family:var(--font-display);font-size:14px}
 .owner-head .meta{font-size:11.5px;color:var(--ink-faint);font-family:var(--font-mono)}
 .owner-head .ach{font-family:var(--font-mono);font-size:14px;font-weight:700}
-@media(max-width:760px){.metrics,.rcards{grid-template-columns:repeat(2,1fr)}.dwrap{grid-template-columns:1fr}.board{overflow-x:auto}.tbl{min-width:780px}.plan-grid{grid-template-columns:repeat(3,1fr)}.venn-wrap{grid-template-columns:1fr}}
+.dim-seg{display:inline-flex;flex-wrap:wrap;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:3px}
+.dim-seg button{font-family:var(--font-body);font-size:12px;font-weight:500;color:var(--ink-soft);background:none;border:none;padding:6px 11px;border-radius:7px;cursor:pointer;transition:.15s}
+.dim-seg button.on{background:var(--navy-800);color:#eaf4f8}
+.due-pill{display:inline-block;font-family:var(--font-mono);font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:6px;background:var(--line-soft);color:var(--ink-soft)}
+.due-pill.soon{background:#fdf1dc;color:#9a6310}
+.due-pill.over{background:#fbe6e3;color:var(--red)}
+@media(max-width:760px){.metrics,.rcards{grid-template-columns:repeat(2,1fr)}.dwrap{grid-template-columns:1fr}.board{overflow-x:auto}.tbl{min-width:780px}}
 
 .overlay{position:fixed;inset:0;background:rgba(9,24,38,.45);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
 .overlay.show{display:flex}
-.modal{background:var(--card);border-radius:18px;width:560px;max-width:100%;max-height:90vh;overflow:auto;box-shadow:0 30px 80px -20px rgba(9,24,38,.5)}
+.modal{background:var(--card);border-radius:18px;width:620px;max-width:100%;max-height:90vh;overflow:auto;box-shadow:0 30px 80px -20px rgba(9,24,38,.5)}
 .modal-head{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--line-soft)}
 .modal-head h3{font-family:var(--font-display);font-size:17px;font-weight:600}
 .modal-head .x{background:none;border:none;font-size:22px;color:var(--ink-faint);cursor:pointer;line-height:1}
@@ -239,6 +240,10 @@ input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,1
 .neg-area:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,174,158,.13)}
 .neg-saved{font-size:10.5px;color:var(--teal);margin-left:8px;opacity:0;transition:opacity .25s}
 .neg-saved.on{opacity:1}
+
+.soi{display:flex;gap:6px}
+.soi select{flex:1}
+.soi input{flex:1}
 </style>
 </head>
 <body>
@@ -257,6 +262,7 @@ input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,1
   <div class="tabs">
     <button class="tab on" data-tab="board" onclick="switchTab('board')">선적 보드</button>
     <button class="tab" data-tab="rev" onclick="switchTab('rev')">매출 현황</button>
+    <button class="tab" data-tab="ar" onclick="switchTab('ar')">매출채권</button>
   </div>
 
   <div id="boardView">
@@ -313,24 +319,36 @@ input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,1
     <div class="board">
       <div class="board-head"><h2 id="boardTitle">선적 보드</h2><span class="count" id="boardCount"></span></div>
       <div style="overflow-x:auto">
-        <table class="tbl"><thead><tr><th>거래처 / PO</th><th>품목</th><th class="r">물량</th><th class="r">USD</th><th class="r">원화</th><th>출고 / ETD → ETA</th><th>인코텀즈/수금</th><th>상태</th><th>담당</th></tr></thead><tbody id="rows"></tbody></table>
+        <table class="tbl"><thead><tr><th>거래처 / PO</th><th>국가</th><th>품목</th><th class="r">물량</th><th class="r">USD</th><th class="r">원화</th><th>출고 / ETD → ETA</th><th>인코텀즈/수금</th><th>상태</th><th>담당</th></tr></thead><tbody id="rows"></tbody></table>
       </div>
       <div class="empty" id="empty" style="display:none">표시할 선적 건이 없습니다.</div>
     </div>
   </div>
 
   <div id="revenueView" style="display:none"></div>
+  <div id="arView" style="display:none"></div>
 </div>
 
 <div class="overlay" id="overlay">
   <div class="modal">
     <div class="modal-head"><h3>새 선적 등록</h3><button class="x" id="closeAdd">×</button></div>
     <div class="modal-body">
-      <div class="row2"><div class="field"><label>거래처</label><input id="f_client" placeholder="예: ABC Trading"></div><div class="field"><label>PO 번호 <span style="color:var(--ink-faint)">(선택)</span></label><input id="f_po" placeholder="PO-2406-000"></div></div>
-      <div class="field"><label>품목</label><input id="f_item" placeholder="예: 밸브 4종"></div>
+      <div class="row2">
+        <div class="field"><label>거래처</label><div id="f_client_box"></div></div>
+        <div class="field"><label>국가</label><div id="f_country_box"></div></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>담당자</label><div id="f_owner_box"></div></div>
+        <div class="field"><label>PO 번호 <span style="color:var(--ink-faint)">(선택)</span></label><input id="f_po" placeholder="PO-2406-000"></div>
+      </div>
+      <div class="row3">
+        <div class="field"><label>구분1</label><div id="f_cat1_box"></div></div>
+        <div class="field"><label>구분2</label><div id="f_cat2_box"></div></div>
+        <div class="field"><label>제품명</label><div id="f_item_box"></div></div>
+      </div>
       <div class="row2"><div class="field"><label>물량</label><input id="f_qty" type="number" min="0" placeholder="0"></div><div class="field"><label>단가 (USD)</label><input id="f_price" type="number" min="0" step="0.01" placeholder="0.00"></div></div>
       <div class="row3"><div class="field"><label>출고일</label><input id="f_release" type="date"></div><div class="field"><label>ETD(예정)</label><input id="f_etd" type="date"></div><div class="field"><label>선적일 (ETA)</label><input id="f_eta" type="date"></div></div>
-      <div class="row3"><div class="field"><label>인코텀즈</label><select id="f_inco"><option>FOB</option><option>CIF</option><option>EXW</option><option>DAP</option><option>DDP</option><option>CFR</option></select></div><div class="field"><label>수금기간 (일)</label><input id="f_terms" type="number" min="0" placeholder="30"></div><div class="field"><label>담당자</label><input id="f_owner" list="ownerList" placeholder="이름"><datalist id="ownerList"></datalist></div></div>
+      <div class="row2"><div class="field"><label>인코텀즈</label><select id="f_inco"><option>FOB</option><option>CIF</option><option>EXW</option><option>DAP</option><option>DDP</option><option>CFR</option><option>FCA</option><option>CPT</option></select></div><div class="field"><label>수금기간 (일)</label><input id="f_terms" type="number" min="0" placeholder="30"></div></div>
       <div class="auto-calc" id="f_calc"><span>USD 매출액 <b id="f_usd">$0</b></span><span>원화 매출액 <b id="f_krw">₩0</b></span><span style="color:var(--ink-faint)">추정환율 적용</span></div>
     </div>
     <div class="modal-foot"><button class="btn btn-soft" id="cancelAdd">취소</button><button class="btn btn-pri" id="saveAdd">등록</button></div>
@@ -347,7 +365,18 @@ input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,1
       <div class="hint">선적일 환율로 원화 매출액이 확정됩니다.</div>
     </div>
     <div class="modal-foot"><button class="btn btn-soft" onclick="closeShip()">취소</button><button class="btn btn-pri" id="sf_save">확정</button></div>
+  </div>
+</div>
 
+<div class="overlay" id="payOverlay">
+  <div class="modal" style="width:440px">
+    <div class="modal-head"><h3>수금 등록</h3><button class="x" onclick="closePay()">×</button></div>
+    <div class="modal-body">
+      <div class="field"><label>수금일</label><input id="pf_date" type="date"></div>
+      <div class="auto-calc"><span>USD <b id="pf_usd">$0</b></span><span>원화 <b id="pf_krw">₩0</b></span></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-soft" onclick="closePay()">취소</button><button class="btn btn-pri" id="pf_save">확정</button></div>
+  </div>
 </div>
 
 <div class="wheel-overlay" id="wheelOv">
@@ -358,56 +387,103 @@ input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,1
   </div>
 </div>
 
-
-
 <script>
+/* ==========  MASTER DATA  ========== */
+const OWNERS=['박진수','이용희','이지원','최원진'];
+const TEAM={'박진수':'1팀','이용희':'1팀','이지원':'2팀','최원진':'2팀'};
+const COUNTRIES=['남미','남미 확대','대만','도미니카','멕시코','미국','미얀마','베트남','브라질','스리랑카','싱가폴','아르헨','영국','유럽','일본','중국','캐나다','파나마','파키스탄','필리핀'];
+const CAT1_LIST=['원제','완제','파인켐'];
+const CAT2_LIST=['BTF','CMO','FTS','MTF','PBX','제네릭','테라도'];
+const PRODUCTS=['테라도 5ME','테라도 5SC','테라도 30SC','테라도 30WG','테라도 70WG','테라도 합제(GLU)','테라도 합제(S-MOC)','테라도 비용정산','테라도 원제','BTF 합제(EMA)','BTF 10EC','FEM','EBX','FTS 10WG','FTS 10WP','FTS 원제','MTF 10EC','MTF 로열티','MTF 원제','PBX 5EC','PBX 5.8EC','PBX 8.5EC','PBX 원제','4-CPA','BEAUVERIA BASSIANA ERL 836 GR(총채싹 입제)','CABA 60SL','Chlorfluazuron 5EC','CHLOROTHALONIL 75WP','Cyclaniliprole 5SL','CYPERMETHRIN 5EC','DIFENOCONAZOLE 25EC','DIFENOCONAZOLE 합제(PROPICONAZOLE)','DIFENOCONAZOLE 합제(TEBUCONAZOLE)','FENPROPATHRIN 92%','Flonicamid 50WG','Fluazifop-p-butyl 15EC','Fluazinam 50SC','HEXACONAZOLE 5SC','HYMEXAZOLE 5SC','HYMEXAZOLE 30SL','LAMBDA-CYHALOTHRIN 2.5EC','LPE 1SL','PENCYCURON 25WP','PENCYCURON 90%','PESL 30SL','PRETILACHLOR 30EC','PYRAZOSULFURON-ETHYL 97%','네마프리 액제','엑시마이트 액제'];
+const CMO_PRODUCTS=['FEM','EBX'];
+const CLIENTS=['4B(Almont)','AGRO PRO PANAMA SA','Agrohao Company Limited','Agroquimicos Versa SA de CV','ALDIZ incorporated','Alfa Mark Company Ltd','ALMANDINE','Almont','AMVAC NETHERLANDS BV','Ayan Crop Science','BIOSTADT PHILIPPINES','Certis Belchim','Corteva','EPT(EASTERN PIONEER TRADR)','FMC Corporation','FUZUN Agro','Golden Lion Agricultural Resources','HARCROS CHEMICALS(PVT) LTD','Iharabras','ISK','ISK(남미 4국)','ISK(남미확대)','ISK(대만)','ISK(미국)','ISK(베트남)','ISK(브라질)','ISK(스리랑카)','ISK(아르헨)','ISK(캐나다)','ISK(파키스탄)','ISK(필리핀)','Kanzo Ag','NFC','Qingdao Sinoagro Import & Export Co','SAI','SUMITOMO CHEMICAL CO LTD','SUMMIT AGRO INTERNATIONAL(스리랑카)','SYNGENTA ASIA PACIFIC PTE LTD','TAI YEH CHEM 대만','VFC','Zagro Singapore Ple','가이아그로','기타매출(FMC)','브라질업체','코오롱글로벌(주) 상사부문'];
+
+function cat2OfProduct(p){
+  if(!p) return '';
+  if(CMO_PRODUCTS.includes(p)) return 'CMO';
+  if(p.indexOf('테라도')===0) return '테라도';
+  if(p.indexOf('BTF')===0) return 'BTF';
+  if(p.indexOf('FTS')===0) return 'FTS';
+  if(p.indexOf('MTF')===0) return 'MTF';
+  if(p.indexOf('PBX')===0) return 'PBX';
+  return '제네릭';
+}
+function productsByCat2(c2){
+  if(!c2) return PRODUCTS;
+  if(c2==='CMO') return CMO_PRODUCTS;
+  return PRODUCTS.filter(p=>cat2OfProduct(p)===c2);
+}
+
 const STATUSES=['출고 준비중','출고 완료','선적 완료','수금 완료'];
 const META={'출고 준비중':{cls:'b-prep',stage:'factory'},'출고 완료':{cls:'b-loaded',stage:'port'},'선적 완료':{cls:'b-transit',stage:'sea'},'수금 완료':{cls:'b-done',stage:'done'}};
 const today=new Date();today.setHours(0,0,0,0);
 const iso=d=>{const x=new Date(today);x.setDate(x.getDate()+d);return x.toISOString().slice(0,10);};
 const now=()=>new Date().toISOString();
-let state=null,settings=null,scope={mode:'all',person:null},openId=null,revGran='month',revOwner='all',revView='chart';
+let state=null,settings=null,scope={mode:'all',person:null},openId=null,revGran='month',revOwner='all',revDim='owner';
 let boardGran='all',boardPeriod='all';
-let me='김선영';
+let me='박진수';
 const revYear=today.getFullYear();
-const OWNERS=['김선영','박준호','이하늘'];
 
 const seed=[
-  {id:'s1',client:'ABC Trading',po:'PO-2406-019',item:'밸브 4종',qty:1200,price:18,etd:iso(2),eta:iso(16),atd:null,status:'출고 준비중',owner:'김선영',inco:'FOB',terms:30,shipRate:null,krwActual:null,history:[{who:'김선영',text:'선적 건 등록',at:now()}],comments:[]},
-  {id:'s2',client:'Hanoi Steel',po:'PO-2406-021',item:'강관 20T',qty:20,price:4200,etd:iso(-1),prevEtd:iso(-6),eta:iso(13),atd:null,status:'출고 완료',owner:'박준호',inco:'CIF',terms:60,shipRate:null,krwActual:null,history:[{who:'박준호',text:'선적 건 등록',at:now()},{who:'박준호',text:'ETD 변경',amt:'ETD '+iso(-6)+' → '+iso(-1),reason:'선사 부킹 지연',at:now()}],comments:[{who:'김선영',text:'바이어에 ETA 변경 통보 완료. 페널티 없음 확인.',at:now()}]},
-  {id:'s3',client:'Pacific Co.',po:'PO-2406-015',item:'펌프 부품',qty:540,price:65,etd:iso(-4),eta:iso(9),atd:iso(-4),status:'선적 완료',owner:'김선영',inco:'FOB',terms:30,shipRate:1378,krwActual:540*65*1378,history:[{who:'김선영',text:'선적 건 등록',at:now()},{who:'김선영',text:'선적 완료 · 실적 전환',amt:'ATD '+iso(-4)+' / 환율 ₩1,378',at:now()}],comments:[]},
-  {id:'s4',client:'Delta GmbH',po:'PO-2405-088',item:'계측기 세트',qty:80,price:320,etd:iso(-9),eta:iso(-2),atd:iso(-8),status:'선적 완료',owner:'박준호',inco:'DAP',terms:45,shipRate:1372,krwActual:80*320*1372,history:[{who:'박준호',text:'선적 건 등록',at:now()},{who:'박준호',text:'선적 완료 · 실적 전환',amt:'ATD '+iso(-8)+' / 환율 ₩1,372',at:now()}],comments:[{who:'박준호',text:'통관 지연으로 ETA 경과. 현지 포워더 확인 중.',at:now()}]},
-  {id:'s5',client:'Sunrise Ltd',po:'PO-2406-024',item:'스페어 파츠',qty:3000,price:7.5,etd:iso(-12),eta:iso(-5),atd:iso(-11),status:'수금 완료',owner:'이하늘',inco:'CIF',terms:30,shipRate:1375,krwActual:3000*7.5*1375,history:[{who:'이하늘',text:'선적 건 등록',at:now()},{who:'이하늘',text:'선적 완료 · 실적 전환',at:now()},{who:'이하늘',text:'수금 완료',at:now()}],comments:[]},
-  {id:'s6',client:'Orient Mfg',po:'PO-2405-070',item:'컴프레서',qty:12,price:5400,etd:iso(-20),eta:iso(-8),atd:iso(-19),status:'수금 완료',owner:'이하늘',inco:'FOB',terms:60,shipRate:1370,krwActual:12*5400*1370,history:[{who:'이하늘',text:'선적 건 등록',at:now()},{who:'이하늘',text:'선적 완료 · 실적 전환',at:now()},{who:'이하늘',text:'수금 완료',at:now()}],comments:[]},
+  {id:'s1',client:'ISK(베트남)',country:'베트남',po:'PO-2406-019',item:'테라도 30SC',cat1:'완제',cat2:'테라도',qty:1200,price:18,etd:iso(2),eta:iso(16),atd:null,status:'출고 준비중',owner:'박진수',inco:'FOB',terms:30,shipRate:null,krwActual:null,paidAt:null,history:[{who:'박진수',text:'선적 건 등록',at:now()}],comments:[]},
+  {id:'s2',client:'FMC Corporation',country:'미국',po:'PO-2406-021',item:'PBX 5EC',cat1:'완제',cat2:'PBX',qty:20,price:4200,etd:iso(-1),prevEtd:iso(-6),eta:iso(13),atd:null,status:'출고 완료',owner:'이용희',inco:'CIF',terms:60,shipRate:null,krwActual:null,paidAt:null,history:[{who:'이용희',text:'선적 건 등록',at:now()},{who:'이용희',text:'ETD 변경',amt:'ETD '+iso(-6)+' → '+iso(-1),reason:'선사 부킹 지연',at:now()}],comments:[]},
+  {id:'s3',client:'SYNGENTA ASIA PACIFIC PTE LTD',country:'싱가폴',po:'PO-2406-015',item:'FEM',cat1:'완제',cat2:'CMO',qty:540,price:65,etd:iso(-4),eta:iso(9),atd:iso(-4),status:'선적 완료',owner:'박진수',inco:'FOB',terms:30,shipRate:1378,krwActual:540*65*1378,paidAt:null,history:[{who:'박진수',text:'선적 건 등록',at:now()},{who:'박진수',text:'선적 완료 · 실적 전환',amt:'ATD '+iso(-4)+' / 환율 ₩1,378',at:now()}],comments:[]},
+  {id:'s4',client:'Iharabras',country:'브라질',po:'PO-2405-088',item:'BTF 10EC',cat1:'완제',cat2:'BTF',qty:80,price:320,etd:iso(-9),eta:iso(-2),atd:iso(-8),status:'선적 완료',owner:'이용희',inco:'DAP',terms:45,shipRate:1372,krwActual:80*320*1372,paidAt:null,history:[{who:'이용희',text:'선적 건 등록',at:now()},{who:'이용희',text:'선적 완료 · 실적 전환',amt:'ATD '+iso(-8)+' / 환율 ₩1,372',at:now()}],comments:[]},
+  {id:'s5',client:'TAI YEH CHEM 대만',country:'대만',po:'PO-2406-024',item:'FTS 10WG',cat1:'완제',cat2:'FTS',qty:3000,price:7.5,etd:iso(-12),eta:iso(-5),atd:iso(-11),status:'수금 완료',owner:'이지원',inco:'CIF',terms:30,shipRate:1375,krwActual:3000*7.5*1375,paidAt:iso(-1),history:[{who:'이지원',text:'선적 건 등록',at:now()},{who:'이지원',text:'선적 완료 · 실적 전환',at:now()},{who:'이지원',text:'수금 완료',at:now()}],comments:[]},
+  {id:'s6',client:'Corteva',country:'미국',po:'PO-2405-070',item:'MTF 10EC',cat1:'완제',cat2:'MTF',qty:12,price:5400,etd:iso(-20),eta:iso(-8),atd:iso(-19),status:'수금 완료',owner:'최원진',inco:'FOB',terms:60,shipRate:1370,krwActual:12*5400*1370,paidAt:iso(-3),history:[{who:'최원진',text:'선적 건 등록',at:now()},{who:'최원진',text:'선적 완료 · 실적 전환',at:now()},{who:'최원진',text:'수금 완료',at:now()}],comments:[]},
 ];
+
 function defaultSettings(){
   const planByOwner={};
-  OWNERS.forEach(o=>{planByOwner[o]={};for(let m=1;m<=12;m++)planByOwner[o][revYear+'-'+m]=20000;});
+  // planByOwner[owner][year-month] = [ {product, qty, price, directUsd} ]
+  OWNERS.forEach(o=>{planByOwner[o]={};});
   return{planRate:1350,estRate:1380,planByOwner};
 }
 
 async function load(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}}
-async function saveAll(){try{localStorage.setItem('shipments',JSON.stringify(state));localStorage.setItem('revsettings',JSON.stringify(settings));localStorage.setItem('me',me);}catch(e){}}
+async function saveAll(){try{localStorage.setItem('shipments_v2',JSON.stringify(state));localStorage.setItem('revsettings_v2',JSON.stringify(settings));localStorage.setItem('me',me);}catch(e){}}
 
 const fmtD=s=>s?s.slice(5).replace('-','/'):'—';
 const fmtT=s=>{const d=new Date(s);return (d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');};
 const initials=n=>n?n.slice(0,2):'??';
 const isDone=s=>s.status==='수금 완료';
 function isDelayed(s){if(isDone(s))return false;const st=META[s.status].stage;if((st==='factory'||st==='port')&&s.etd&&s.etd<iso(0))return true;if(s.eta&&s.eta<iso(0))return true;return false;}
-function thisWeek(s){if(!s.etd)return false;const day=today.getDay()||7;const mon=new Date(today);mon.setDate(today.getDate()-(day-1));const sun=new Date(mon);sun.setDate(mon.getDate()+6);const e=new Date(s.etd+'T00:00:00');return e>=mon&&e<=sun;}
 const changedToday=s=>s.history.some(h=>h.at.slice(0,10)===iso(0));
-const usdOf=s=>s.qty*s.price;
+const usdOf=s=>(s.qty||0)*(s.price||0);
 const krwOf=s=>{const st=META[s.status].stage;return (st==='sea'||st==='done')&&s.krwActual?s.krwActual:Math.round(usdOf(s)*settings.estRate);};
-const owners=()=>{const set=new Set(OWNERS);state.forEach(s=>set.add(s.owner));return [...set];};
 function won(v){v=Math.round(v);const sign=v<0?'-':'';v=Math.abs(v);if(v>=1e8)return sign+'₩'+(v/1e8).toFixed(2)+'억';if(v>=1e4)return sign+'₩'+Math.round(v/1e4).toLocaleString()+'만';return sign+'₩'+v.toLocaleString();}
 function usd(v){v=Math.round(v);const sign=v<0?'-':'';v=Math.abs(v);if(v>=1e6)return sign+'$'+(v/1e6).toFixed(2)+'M';if(v>=1e3)return sign+'$'+(v/1e3).toFixed(1)+'K';return sign+'$'+v.toLocaleString();}
+function addDays(isoStr,d){const dt=new Date(isoStr+'T00:00:00');dt.setDate(dt.getDate()+d);return dt.toISOString().slice(0,10);}
+function dueDate(s){const base=s.atd||s.eta;if(!base)return null;return addDays(base,s.terms||0);}
+function daysBetween(a,b){return Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/86400000);}
 
 function updateChip(){document.getElementById('rateChip').textContent='추정환율 ₩'+settings.estRate.toLocaleString()+' / $';}
 function fillMe(){
   const sel=document.getElementById('meSel');sel.innerHTML=OWNERS.map(o=>`<option ${o===me?'selected':''}>${o}</option>`).join('');
   document.getElementById('meAv').textContent=initials(me);
-  sel.onchange=e=>{me=e.target.value;document.getElementById('meAv').textContent=initials(me);saveAll();if(document.getElementById('revenueView').style.display!=='none')renderRevenue();};
+  sel.onchange=e=>{me=e.target.value;document.getElementById('meAv').textContent=initials(me);saveAll();render();if(document.getElementById('revenueView').style.display!=='none')renderRevenue();if(document.getElementById('arView').style.display!=='none')renderAR();};
 }
+
+/* ---------- select-or-input helper (with "직접 입력") ---------- */
+let soiSeq=0;
+function soiHtml(id,items,val,onChange){
+  // returns markup for select + hidden input that toggles when "직접 입력" picked
+  const isCustom=val&&!items.includes(val);
+  const opts=['<option value="">선택</option>',...items.map(i=>`<option value="${i.replace(/"/g,'&quot;')}" ${i===val?'selected':''}>${i}</option>`),`<option value="__custom__" ${isCustom?'selected':''}>직접 입력</option>`].join('');
+  return `<div class="soi" data-soi="${id}">
+    <select onchange="soiPick('${id}',this.value)">${opts}</select>
+    <input style="display:${isCustom?'block':'none'}" placeholder="직접 입력" value="${isCustom?val:''}" oninput="soiInput('${id}',this.value)">
+  </div>`;
+}
+const soiCb={};
+function soiPick(id,v){
+  const box=document.querySelector(`[data-soi="${id}"]`);const inp=box.querySelector('input');
+  if(v==='__custom__'){inp.style.display='block';inp.value='';inp.focus();if(soiCb[id])soiCb[id]('');return;}
+  inp.style.display='none';inp.value='';
+  if(soiCb[id])soiCb[id](v);
+}
+function soiInput(id,v){if(soiCb[id])soiCb[id](v);}
+function soiValue(id){const box=document.querySelector(`[data-soi="${id}"]`);if(!box)return '';const s=box.querySelector('select').value;if(s==='__custom__')return box.querySelector('input').value.trim();return s;}
 
 /* ---- board period filter ---- */
 function getDateOf(s){return s.atd||s.etd;}
@@ -443,7 +519,7 @@ function render(){updateChip();renderChips();populateBoardPeriods();renderLane()
   document.getElementById('heroTitle').textContent=scope.mode==='person'&&scope.person?scope.person+' 담당 항로':'팀 전체 항로';
   document.getElementById('heroSub').textContent=scope.mode==='person'&&scope.person?scope.person+'님의 진행 선적':'진행 중인 모든 선적';}
 
-function renderChips(){const box=document.getElementById('chips');if(scope.mode!=='person'){box.style.display='none';return;}box.style.display='flex';box.innerHTML=owners().map(o=>`<button class="chip ${scope.person===o?'on':''}" data-person="${o}"><span class="av">${initials(o)}</span>${o}</button>`).join('');}
+function renderChips(){const box=document.getElementById('chips');if(scope.mode!=='person'){box.style.display='none';return;}box.style.display='flex';box.innerHTML=OWNERS.map(o=>`<button class="chip ${scope.person===o?'on':''}" data-person="${o}"><span class="av">${initials(o)}</span>${o}</button>`).join('');}
 
 function renderLane(){const lane=document.getElementById('lane');const list=visible();const groups={factory:[],port:[],sea:[],dest:[]};
   list.forEach(s=>{const st=META[s.status].stage;groups[st==='done'?'dest':st].push(s);});
@@ -490,8 +566,9 @@ function renderBoard(){const list=visible(),rows=document.getElementById('rows')
     const open=openId===s.id;
     return `<tr class="row ${open?'open':''}" data-id="${s.id}">
       <td><div class="cli">${s.client}</div><div class="po">${s.po||''}</div></td>
-      <td style="color:var(--ink-soft)">${s.item}</td>
-      <td class="r">${s.qty.toLocaleString()}</td>
+      <td style="color:var(--ink-soft);font-size:12px">${s.country||'-'}</td>
+      <td style="color:var(--ink-soft)">${s.item}<div style="font-size:10.5px;color:var(--ink-faint);margin-top:2px">${s.cat1||'-'} · ${s.cat2||'-'}</div></td>
+      <td class="r">${(s.qty||0).toLocaleString()}</td>
       <td class="r">$${usdOf(s).toLocaleString()}</td>
       <td class="r">₩${krwOf(s).toLocaleString()}${s.shipRate?'<div style="color:var(--ink-faint);font-size:10.5px">@₩'+s.shipRate.toLocaleString()+'</div>':''}</td>
       <td><span class="dates">${etd} → ${fmtD(s.eta)}</span>${s.release?'<div style="color:var(--ink-faint);font-size:10.5px;font-family:var(--font-mono);margin-top:2px">출고 '+fmtD(s.release)+'</div>':''}</td>
@@ -503,7 +580,7 @@ function renderBoard(){const list=visible(),rows=document.getElementById('rows')
 function detailRow(s){const m=META[s.status];const isActual=m.stage==='sea'||m.stage==='done';
   const tl=s.history.map(h=>`<div class="tl-item"><div class="tl-main"><b>${h.who}</b> · ${h.text}${h.amt?` <span class="amt-line">${h.amt}</span>`:''}${h.reason?` <span style="color:var(--ink-soft)">(사유: ${h.reason})</span>`:''}</div><div class="tl-meta">${fmtT(h.at)}</div></div>`).reverse().join('');
   const cm=s.comments.length?s.comments.map(c=>`<div class="cmt"><div class="av">${initials(c.who)}</div><div><div><span class="cn">${c.who}</span><span class="ct">${fmtT(c.at)}</span></div><div class="cb">${c.text}</div></div></div>`).join(''):`<div style="color:var(--ink-faint);font-size:12.5px;margin-bottom:10px">아직 코멘트가 없습니다.</div>`;
-  return `<tr class="detail"><td colspan="9"><div class="dwrap">
+  return `<tr class="detail"><td colspan="10"><div class="dwrap">
     <div class="dsec">
       <h4>◷ 변경 이력 <span style="color:var(--ink-faint);font-weight:400">(자동 기록)</span></h4>
       <div class="timeline">${tl}</div>
@@ -545,7 +622,6 @@ function wtrigDate(id,key,val){
 }
 function wtrigList(id,key,val,items,fmt){
   const f=fmt||(v=>String(v));
-  const items_js=items.join(',');
   return `<button type="button" class="wtrig ${val!==undefined&&val!==null&&val!==''?'':'empty'}" onclick='pickList("${id}","${key}",[${items.map(i=>typeof i==='number'?i:`"${i}"`).join(',')}],${fmt?'true':'false'})'>${val!==undefined&&val!==''?f(val):'선택'}<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2"/></svg></button>`;
 }
 function pickDate(id,key){const s=find(id);openDateWheel(({release:'출고일',etd:'ETD(ATD)',eta:'선적일 (ETA)'})[key],s[key],v=>updateField(id,key,v));}
@@ -581,80 +657,124 @@ document.getElementById('sf_save').onclick=()=>{const s=find(shipPendingId);cons
   if(!r){alert('환율을 입력하세요');return;}
   s.atd=atd||iso(0);s.shipRate=r;s.krwActual=Math.round(usdOf(s)*r);s.status='선적 완료';
   s.history.push({who:me,text:'선적 완료 · 실적 전환',amt:'ATD '+fmtD(s.atd)+' / 환율 ₩'+r.toLocaleString(),at:now()});
-  closeShip();saveAll();render();};
+  closeShip();saveAll();render();if(document.getElementById('revenueView').style.display!=='none')renderRevenue();if(document.getElementById('arView').style.display!=='none')renderAR();};
+
+let payPendingId=null;
+function openPayModal(id){payPendingId=id;const s=find(id);
+  document.getElementById('pf_date').value=s.paidAt||iso(0);
+  document.getElementById('pf_usd').textContent='$'+usdOf(s).toLocaleString();
+  document.getElementById('pf_krw').textContent='₩'+(s.krwActual||Math.round(usdOf(s)*settings.estRate)).toLocaleString();
+  document.getElementById('payOverlay').classList.add('show');}
+function closePay(){document.getElementById('payOverlay').classList.remove('show');payPendingId=null;}
+document.getElementById('pf_save').onclick=()=>{const s=find(payPendingId);const d=document.getElementById('pf_date').value||iso(0);
+  s.paidAt=d;s.status='수금 완료';s._fresh=true;
+  if(!s.atd)s.atd=iso(0);if(!s.shipRate)s.shipRate=settings.estRate;if(!s.krwActual)s.krwActual=Math.round(usdOf(s)*s.shipRate);
+  s.history.push({who:me,text:'수금 완료',amt:'수금일 '+fmtD(d),at:now()});
+  closePay();saveAll();render();if(document.getElementById('arView').style.display!=='none')renderAR();if(document.getElementById('revenueView').style.display!=='none')renderRevenue();};
+document.getElementById('payOverlay').addEventListener('click',e=>{if(e.target.id==='payOverlay')closePay();});
 
 function changeStatus(id,val){const s=find(id);if(val===s.status)return;
   if(val==='선적 완료'){openShipModal(id);return;}
+  if(val==='수금 완료'){openPayModal(id);return;}
   const before=s.status;s.status=val;
-  if(val==='수금 완료'){s._fresh=true;if(!s.atd)s.atd=iso(0);if(!s.shipRate)s.shipRate=settings.estRate;if(!s.krwActual)s.krwActual=Math.round(usdOf(s)*s.shipRate);s.history.push({who:me,text:'수금 완료',at:now()});}
-  else{s.history.push({who:me,text:'상태 변경',amt:before+' → '+val,at:now()});}
+  s.history.push({who:me,text:'상태 변경',amt:before+' → '+val,at:now()});
   saveAll();render();}
 
 /* ---------- revenue ---------- */
-function revData(gran,ownerFilter){const Y=revYear;const m=Array.from({length:12},()=>({plan:0,est:0,act:0,planUsd:0,estUsd:0,actUsd:0}));
-  // Plan: per-owner, sum (filtered)
+function isShipped(s){const st=META[s.status].stage;return st==='sea'||st==='done';}
+function shipmentDate(s){return s.atd||s.etd;}
+function shipmentMonth(s){const d=shipmentDate(s);if(!d)return -1;const dt=new Date(d+'T00:00:00');return dt.getFullYear()===revYear?dt.getMonth():-1;}
+function shipUsd(s){return usdOf(s);}
+function shipKrw(s){if(isShipped(s)&&s.krwActual)return s.krwActual;return Math.round(usdOf(s)*(s.shipRate||settings.estRate));}
+
+function planUsdFor(owner,monthIdx){
+  const ob=(settings.planByOwner&&settings.planByOwner[owner])||{};
+  const arr=ob[revYear+'-'+(monthIdx+1)]||[];
+  return arr.reduce((a,p)=>{
+    if(p.product==='테라도 비용정산')return a+(Number(p.directUsd)||0);
+    return a+(Number(p.qty)||0)*(Number(p.price)||0);
+  },0);
+}
+
+function revData(gran,ownerFilter){
+  const m=Array.from({length:12},()=>({plan:0,est:0,act:0,planUsd:0,estUsd:0,actUsd:0}));
   const ownersForPlan=ownerFilter==='all'?OWNERS:[ownerFilter];
-  ownersForPlan.forEach(o=>{const ob=(settings.planByOwner&&settings.planByOwner[o])||{};
-    for(let i=0;i<12;i++){const u=Number(ob[Y+'-'+(i+1)]||0);m[i].planUsd+=u;m[i].plan+=u*settings.planRate;}});
-  state.forEach(s=>{if(ownerFilter!=='all'&&s.owner!==ownerFilter)return;
-    const st=META[s.status].stage;const u=usdOf(s);
-    if(st==='factory'||st==='port'){if(s.etd){const dt=new Date(s.etd);if(dt.getFullYear()===Y){m[dt.getMonth()].est+=u*settings.estRate;m[dt.getMonth()].estUsd+=u;}}}
-    else{const d=s.atd||s.etd;if(d){const dt=new Date(d);if(dt.getFullYear()===Y){const rate=s.shipRate||settings.estRate;m[dt.getMonth()].act+=(s.krwActual||u*rate);m[dt.getMonth()].actUsd+=u;}}}});
+  ownersForPlan.forEach(o=>{for(let i=0;i<12;i++){const u=planUsdFor(o,i);m[i].planUsd+=u;m[i].plan+=u*settings.planRate;}});
+  state.forEach(s=>{
+    if(ownerFilter!=='all'&&s.owner!==ownerFilter)return;
+    const mi=shipmentMonth(s);if(mi<0)return;
+    const u=shipUsd(s);const k=shipKrw(s);
+    // 추정(실적) = ALL entered for this period
+    m[mi].est+=k;m[mi].estUsd+=u;
+    // 실적 = only those shipped
+    if(isShipped(s)){m[mi].act+=k;m[mi].actUsd+=u;}
+  });
   if(gran==='month')return m.map((x,i)=>({label:(i+1)+'월',...x}));
   if(gran==='quarter')return [0,1,2,3].map(q=>{const a={plan:0,est:0,act:0,planUsd:0,estUsd:0,actUsd:0,label:'Q'+(q+1)};for(let k=0;k<3;k++){['plan','est','act','planUsd','estUsd','actUsd'].forEach(f=>a[f]+=m[q*3+k][f]);}return a;});
-  const t={plan:0,est:0,act:0,planUsd:0,estUsd:0,actUsd:0,label:Y+'년'};m.forEach(x=>['plan','est','act','planUsd','estUsd','actUsd'].forEach(f=>t[f]+=x[f]));return [t];}
+  const t={plan:0,est:0,act:0,planUsd:0,estUsd:0,actUsd:0,label:revYear+'년'};m.forEach(x=>['plan','est','act','planUsd','estUsd','actUsd'].forEach(f=>t[f]+=x[f]));return [t];}
 
-// Venn data: per item, plan(USD) vs est+act(USD), aggregated for current period selection
-function vennData(gran,period,ownerFilter){
-  const Y=revYear;
-  const inP=(monthIdx)=>{
-    if(gran==='year')return true;
-    if(gran==='quarter')return Math.floor(monthIdx/3)===period;
-    return monthIdx===period;
-  };
-  // Plan is not per-item; assume even split across items present in actuals/estimates for the period? 
-  // Better: plan is per-owner total; show as a single "PLAN total" circle vs per-item bubbles.
-  // Approach: One circle = 계획 합계, Other circle = 추정(실적) 합계, intersection = min of the two.
-  const data=revData(gran,ownerFilter);
-  let plan=0,real=0;
-  if(gran==='month'){plan=data[period].plan;real=data[period].est+data[period].act;}
-  else if(gran==='quarter'){plan=data[period].plan;real=data[period].est+data[period].act;}
-  else{plan=data[0].plan;real=data[0].est+data[0].act;}
-  // items breakdown
-  const itemMap={};
-  state.forEach(s=>{if(ownerFilter!=='all'&&s.owner!==ownerFilter)return;
-    const st=META[s.status].stage;const d=st==='factory'||st==='port'?s.etd:(s.atd||s.etd);
-    if(!d)return;const dt=new Date(d);if(dt.getFullYear()!==Y)return;
-    if(!inP(dt.getMonth()))return;
-    const u=usdOf(s);const rate=(st==='sea'||st==='done')?(s.shipRate||settings.estRate):settings.estRate;
-    if(!itemMap[s.item])itemMap[s.item]={krw:0,usd:0};
-    itemMap[s.item].krw+=(st==='sea'||st==='done')?(s.krwActual||u*rate):u*rate;
-    itemMap[s.item].usd+=u;
+function periodMonths(){
+  if(revGran==='year')return [...Array(12).keys()];
+  if(revGran==='quarter'){const q=Math.floor(today.getMonth()/3);return [q*3,q*3+1,q*3+2];}
+  return [today.getMonth()];
+}
+
+function dimKey(s,dim){
+  if(dim==='country')return s.country||'-';
+  if(dim==='owner')return s.owner||'-';
+  if(dim==='cat1')return s.cat1||'-';
+  if(dim==='cat2')return s.cat2||'-';
+  if(dim==='team')return TEAM[s.owner]||'-';
+  if(dim==='client')return s.client||'-';
+  if(dim==='product')return s.item||'-';
+  return '-';
+}
+
+function breakdownByDim(dim){
+  const months=periodMonths();
+  // plan total (per owner) for the period
+  const ownersForPlan=revOwner==='all'?OWNERS:[revOwner];
+  // Plan only has owner dimension; for non-owner/team dims we show "—"
+  const planByOwner={};
+  ownersForPlan.forEach(o=>{planByOwner[o]=months.reduce((a,mi)=>a+planUsdFor(o,mi),0);});
+
+  const groups={};
+  state.forEach(s=>{
+    if(revOwner!=='all'&&s.owner!==revOwner)return;
+    const mi=shipmentMonth(s);if(mi<0||!months.includes(mi))return;
+    const k=dimKey(s,dim);if(!groups[k])groups[k]={estUsd:0,estKrw:0,actUsd:0,actKrw:0,planUsd:0,planKrw:0};
+    const u=shipUsd(s);const kr=shipKrw(s);
+    groups[k].estUsd+=u;groups[k].estKrw+=kr;
+    if(isShipped(s)){groups[k].actUsd+=u;groups[k].actKrw+=kr;}
   });
-  return {plan,real,items:itemMap};
+  // Map plan totals by dim if dim is owner/team
+  if(dim==='owner'){
+    Object.entries(planByOwner).forEach(([o,u])=>{if(!groups[o])groups[o]={estUsd:0,estKrw:0,actUsd:0,actKrw:0,planUsd:0,planKrw:0};groups[o].planUsd=u;groups[o].planKrw=u*settings.planRate;});
+  }else if(dim==='team'){
+    Object.entries(planByOwner).forEach(([o,u])=>{const t=TEAM[o]||'-';if(!groups[t])groups[t]={estUsd:0,estKrw:0,actUsd:0,actKrw:0,planUsd:0,planKrw:0};groups[t].planUsd+=u;groups[t].planKrw+=u*settings.planRate;});
+  }
+  return Object.entries(groups).sort((a,b)=>b[1].estKrw-a[1].estKrw);
 }
 
 function renderRevenue(){
   const data=revData(revGran,revOwner);
   const tot=data.reduce((a,d)=>({plan:a.plan+d.plan,est:a.est+d.est,act:a.act+d.act,planUsd:a.planUsd+d.planUsd,estUsd:a.estUsd+d.estUsd,actUsd:a.actUsd+d.actUsd}),{plan:0,est:0,act:0,planUsd:0,estUsd:0,actUsd:0});
-  const realKrw=tot.est+tot.act,realUsd=tot.estUsd+tot.actUsd;
-  const ach=tot.plan?Math.round(realKrw/tot.plan*100):0;
-  const gapKrw=realKrw-tot.plan,gapUsd=realUsd-tot.planUsd;
-  const max=Math.max(...data.map(d=>Math.max(d.plan,d.est+d.act)),1);
+  const ach=tot.plan?Math.round(tot.est/tot.plan*100):0;
+  const gapKrw=tot.est-tot.plan,gapUsd=tot.estUsd-tot.planUsd;
+  const max=Math.max(...data.map(d=>Math.max(d.plan,d.est)),1);
 
-  const bars=data.map(d=>{const ph=d.plan/max*180,eh=(d.est+d.act)/max*180;
-    const realD=d.est+d.act,gap=realD-d.plan;
-    const gapY=180-ph;
+  const bars=data.map(d=>{const ph=d.plan/max*180,eh=d.est/max*180;
+    const gap=d.est-d.plan;
     return `<div class="rg">
       <div class="rbars">
         <div class="rbar plan" style="height:${ph}px" title="계획 ${won(d.plan)}"></div>
-        <div class="rbar est" style="height:${eh}px" title="추정(실적) ${won(realD)}"></div>
+        <div class="rbar est" style="height:${eh}px" title="추정(실적) ${won(d.est)}"></div>
         ${d.plan>0?`<div class="rgap-line" style="bottom:${ph}px"></div><div class="rgap-txt" style="bottom:${ph}px;left:50%;transform:translateX(-50%)">${gap>=0?'+':''}${won(gap)}</div>`:''}
       </div>
-      <div class="rlab"><b>${d.label}</b>계획 ${won(d.plan)}<br>실제 ${won(realD)}</div>
+      <div class="rlab"><b>${d.label}</b>계획 ${won(d.plan)}<br>추정 ${won(d.est)}</div>
     </div>`;}).join('');
 
-  const trows=data.map(d=>{const realD=d.est+d.act,realDu=d.estUsd+d.actUsd,a=d.plan?Math.round(realD/d.plan*100):0,g=realD-d.plan,gu=realDu-d.planUsd;
+  const trows=data.map(d=>{const a=d.plan?Math.round(d.est/d.plan*100):0,g=d.est-d.plan,gu=d.estUsd-d.planUsd;
     return `<tr><td>${d.label}</td>
       <td>${won(d.plan)}<span class="usd">${usd(d.planUsd)}</span></td>
       <td style="color:var(--teal)">${won(d.est)}<span class="usd">${usd(d.estUsd)}</span></td>
@@ -662,16 +782,20 @@ function renderRevenue(){
       <td style="color:${g>=0?'var(--green)':'var(--red)'}">${g>=0?'+':''}${won(g)}<span class="usd">${gu>=0?'+':''}${usd(gu)}</span></td>
       <td style="font-weight:600;color:${a>=100?'var(--green)':a>=70?'var(--amber)':'var(--red)'}">${a}%</td></tr>`;}).join('');
 
-  const ownerForPlan=revOwner==='all'?me:revOwner;
-  const planObj=(settings.planByOwner&&settings.planByOwner[ownerForPlan])||{};
-  const planCells=Array.from({length:12},(_,i)=>{const u=Number(planObj[revYear+'-'+(i+1)]||0);
-    return `<div class="plan-cell"><label>${i+1}월 (USD)</label><input type="number" value="${u}" onchange="setPlan('${ownerForPlan}',${i+1},this.value)"><div class="calc">${won(u*settings.planRate)}</div></div>`;}).join('');
+  // Breakdown
+  const dims=[['owner','담당자'],['team','그룹(팀)'],['country','국가'],['cat1','구분1'],['cat2','구분2'],['client','거래처'],['product','제품명']];
+  const dimSeg=dims.map(([k,n])=>`<button class="${revDim===k?'on':''}" onclick="setDim('${k}')">${n}</button>`).join('');
+  const brk=breakdownByDim(revDim);
+  const brkRows=brk.length?brk.map(([k,g])=>{
+    const a=g.planKrw?Math.round(g.estKrw/g.planKrw*100):0;
+    const planCell=g.planKrw?`${won(g.planKrw)}<span class="usd">${usd(g.planUsd)}</span>`:`<span style="color:var(--ink-faint)">—</span>`;
+    const achCell=g.planKrw?`<div style="display:flex;align-items:center;justify-content:flex-end;gap:8px"><div class="pgbar"><div class="pgfill" style="width:${Math.min(100,a)}%"></div></div><span style="font-family:var(--font-mono);font-size:12px;min-width:38px;text-align:right;color:${a>=100?'var(--green)':a>=70?'var(--amber)':'var(--red)'};font-weight:600">${a}%</span></div>`:`<span style="color:var(--ink-faint)">—</span>`;
+    return `<tr><td>${k}</td><td>${planCell}</td><td style="color:var(--teal)">${won(g.estKrw)}<span class="usd">${usd(g.estUsd)}</span></td><td style="color:var(--green)">${won(g.actKrw)}<span class="usd">${usd(g.actUsd)}</span></td><td>${achCell}</td></tr>`;
+  }).join(''):`<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);padding:18px">데이터 없음</td></tr>`;
 
-  // Venn current selection
-  const vGran=revGran==='year'?'year':revGran;
-  const vPeriod=revGran==='month'?(today.getMonth()):(revGran==='quarter'?Math.floor(today.getMonth()/3):0);
-  const v=vennData(vGran,vPeriod,revOwner);
-  const venn=buildVenn(v);
+  // Plan input
+  const ownerForPlan=revOwner==='all'?me:revOwner;
+  const planUI=planEditor(ownerForPlan);
 
   document.getElementById('revenueView').innerHTML=`
     <div class="rev-head">
@@ -686,152 +810,259 @@ function renderRevenue(){
     <div class="owner-tabs">
       <span style="font-size:12px;color:var(--ink-faint);padding:6px 4px">담당자</span>
       <button class="chip ${revOwner==='all'?'on':''}" onclick="setRevOwner('all')">팀 전체</button>
-      ${OWNERS.map(o=>`<button class="chip ${revOwner===o?'on':''}" onclick="setRevOwner('${o}')"><span class="av">${initials(o)}</span>${o}</button>`).join('')}
+      ${OWNERS.map(o=>`<button class="chip ${revOwner===o?'on':''}" onclick="setRevOwner('${o}')"><span class="av">${initials(o)}</span>${o} <span style="color:var(--ink-faint);margin-left:4px;font-size:10.5px">${TEAM[o]}</span></button>`).join('')}
     </div>
 
     <div class="rcards">
       <div class="rcard plan"><div class="lab">계획 매출</div><div class="val">${won(tot.plan)}</div><div class="sub">${usd(tot.planUsd)}</div></div>
-      <div class="rcard est"><div class="lab">추정 (미선적)</div><div class="val">${won(tot.est)}</div><div class="sub">${usd(tot.estUsd)}</div></div>
-      <div class="rcard act"><div class="lab">실적 (선적/수금)</div><div class="val">${won(tot.act)}</div><div class="sub">${usd(tot.actUsd)}</div></div>
+      <div class="rcard est"><div class="lab">추정 (실적)</div><div class="val">${won(tot.est)}</div><div class="sub">${usd(tot.estUsd)} · 입력된 매출 총합</div></div>
+      <div class="rcard act"><div class="lab">실적 (선적완료)</div><div class="val">${won(tot.act)}</div><div class="sub">${usd(tot.actUsd)}</div></div>
       <div class="rcard gap"><div class="lab">계획대비 차질</div><div class="val ${gapKrw>=0?'pos':'neg'}">${gapKrw>=0?'+':''}${won(gapKrw)}</div><div class="sub">${gapUsd>=0?'+':''}${usd(gapUsd)} · 달성 ${ach}%</div></div>
     </div>
 
     <div class="panel">
-      <div class="panel-head"><h3>계획 vs 추정(실적)</h3><div class="rlegend"><span><i style="background:repeating-linear-gradient(45deg,#c9c3b4 0 4px,#bcb5a3 4px 8px)"></i>계획</span><span><i style="background:var(--teal)"></i>추정(실적)</span><span><i style="background:var(--red);height:2px;border-radius:0"></i>계획라인</span></div></div>
+      <div class="panel-head"><h3>계획 vs 추정(실적)</h3><div class="rlegend"><span><i style="background:repeating-linear-gradient(45deg,#c9c3b4 0 4px,#bcb5a3 4px 8px)"></i>계획</span><span><i style="background:var(--teal)"></i>추정(실적)</span><span><i style="background:var(--red);height:2px;border-radius:0"></i>차질</span></div></div>
       <div class="chart">${bars}</div>
     </div>
 
     <div class="panel">
-      <div class="panel-head"><h3>${revGran==='month'?(today.getMonth()+1)+'월':revGran==='quarter'?'Q'+(Math.floor(today.getMonth()/3)+1):revYear+'년'} · 계획 vs 추정(실적) 벤다이어그램</h3><div class="rlegend"><span><i style="background:#c9c3b4"></i>계획</span><span><i style="background:var(--teal)"></i>추정(실적)</span></div></div>
-      ${venn}
-    </div>
-
-    <div class="panel">
       <div class="panel-head"><h3>기간별 매출 (원화 / USD)</h3></div>
-      <div style="overflow-x:auto"><table class="rtbl"><thead><tr><th>기간</th><th>계획</th><th>추정</th><th>실적</th><th>차질</th><th>달성률</th></tr></thead><tbody>${trows}</tbody></table></div>
+      <div style="overflow-x:auto"><table class="rtbl"><thead><tr><th>기간</th><th>계획</th><th>추정(실적)</th><th>실적(선적완료)</th><th>차질</th><th>달성률</th></tr></thead><tbody>${trows}</tbody></table></div>
     </div>
 
     <div class="panel">
-      <div class="panel-head"><h3>담당자 · 품목별 목표 달성률 <span style="color:var(--ink-faint);font-weight:400;font-size:12px">(${revGran==='month'?(today.getMonth()+1)+'월':revGran==='quarter'?'Q'+(Math.floor(today.getMonth()/3)+1):revYear+'년'} 기준)</span></h3></div>
+      <div class="panel-head"><h3>구분별 계획 vs 추정(실적)</h3><div class="dim-seg">${dimSeg}</div></div>
+      <div style="overflow-x:auto"><table class="rtbl"><thead><tr><th>${dims.find(d=>d[0]===revDim)[1]}</th><th>계획</th><th>추정(실적)</th><th>실적(선적완료)</th><th>달성률</th></tr></thead><tbody>${brkRows}</tbody></table></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h3>담당자별 목표 달성률 <span style="color:var(--ink-faint);font-weight:400;font-size:12px">(${revGran==='month'?(today.getMonth()+1)+'월':revGran==='quarter'?'Q'+(Math.floor(today.getMonth()/3)+1):revYear+'년'} 기준 · 제품별 / 전체)</span></h3></div>
       ${ownerItemPanel()}
     </div>
 
     <div class="panel">
-      <div class="panel-head"><h3>${ownerForPlan}의 계획 매출 입력 <span style="color:var(--ink-faint);font-weight:400;font-size:12px">(월별 USD · 계획환율로 원화 환산)</span></h3></div>
-      <div class="plan-grid">${planCells}</div>
+      <div class="panel-head"><h3>${ownerForPlan}의 계획 매출 입력 <span style="color:var(--ink-faint);font-weight:400;font-size:12px">(월별 · 품목 단가 입력시 USD/원화 자동 계산)</span></h3></div>
+      ${planUI}
     </div>`;
   updateChip();}
 
 function ownerItemPanel(){
-  const Y=revYear;
-  const inP=(mi)=>{if(revGran==='year')return true;if(revGran==='quarter')return Math.floor(mi/3)===Math.floor(today.getMonth()/3);return mi===today.getMonth();};
+  const months=periodMonths();
+  const inP=mi=>months.includes(mi);
   const map={};
   state.forEach(s=>{
     if(revOwner!=='all'&&s.owner!==revOwner)return;
-    const st=META[s.status].stage;const d=(st==='factory'||st==='port')?s.etd:(s.atd||s.etd);
-    if(!d)return;const dt=new Date(d+'T00:00:00');if(dt.getFullYear()!==Y||!inP(dt.getMonth()))return;
-    const isAct=st==='sea'||st==='done';const u=usdOf(s);const rate=isAct?(s.shipRate||settings.estRate):settings.estRate;
+    const mi=shipmentMonth(s);if(mi<0||!inP(mi))return;
+    const u=shipUsd(s),k=shipKrw(s);
     if(!map[s.owner])map[s.owner]={};
-    if(!map[s.owner][s.item])map[s.owner][s.item]={usd:0,krw:0,est:0,act:0};
-    map[s.owner][s.item].usd+=u;
-    map[s.owner][s.item].krw+=isAct?(s.krwActual||u*rate):u*rate;
-    if(isAct)map[s.owner][s.item].act+=u;else map[s.owner][s.item].est+=u;
+    if(!map[s.owner][s.item])map[s.owner][s.item]={usd:0,krw:0,actUsd:0,actKrw:0};
+    map[s.owner][s.item].usd+=u;map[s.owner][s.item].krw+=k;
+    if(isShipped(s)){map[s.owner][s.item].actUsd+=u;map[s.owner][s.item].actKrw+=k;}
   });
   const planByOwner={};
-  OWNERS.forEach(o=>{const ob=settings.planByOwner[o]||{};let total=0;
-    if(revGran==='month')total=Number(ob[Y+'-'+(today.getMonth()+1)]||0);
-    else if(revGran==='quarter'){const q=Math.floor(today.getMonth()/3);for(let k=0;k<3;k++)total+=Number(ob[Y+'-'+(q*3+k+1)]||0);}
-    else for(let mi=1;mi<=12;mi++)total+=Number(ob[Y+'-'+mi]||0);
-    planByOwner[o]={usd:total,krw:total*settings.planRate};
-  });
+  OWNERS.forEach(o=>{let total=0;months.forEach(mi=>{total+=planUsdFor(o,mi);});planByOwner[o]={usd:total,krw:total*settings.planRate};});
   const list=revOwner==='all'?OWNERS:[revOwner];
   return list.map(o=>{
     const items=map[o]||{};const plan=planByOwner[o]||{usd:0,krw:0};
     const totalKrw=Object.values(items).reduce((a,b)=>a+b.krw,0);
     const totalUsd=Object.values(items).reduce((a,b)=>a+b.usd,0);
+    const totalActKrw=Object.values(items).reduce((a,b)=>a+b.actKrw,0);
     const ach=plan.krw?Math.round(totalKrw/plan.krw*100):0;
+    const actAch=plan.krw?Math.round(totalActKrw/plan.krw*100):0;
     const rows=Object.entries(items).sort((a,b)=>b[1].krw-a[1].krw).map(([item,d])=>{
       const pct=plan.krw?Math.round(d.krw/plan.krw*100):0;
-      const status=d.act>0&&d.est===0?'실적':d.act>0?'실적+추정':'추정';
-      const sc=d.act>0&&d.est===0?'var(--green)':d.act>0?'var(--teal)':'var(--amber)';
-      return `<tr><td>${item} <span style="font-size:10.5px;color:${sc};font-weight:600;margin-left:4px">${status}</span></td><td>${won(d.krw)}<span class="usd">${usd(d.usd)}</span></td><td><div style="display:flex;align-items:center;justify-content:flex-end;gap:8px"><div class="pgbar"><div class="pgfill" style="width:${Math.min(100,pct)}%"></div></div><span style="font-family:var(--font-mono);font-size:12px;min-width:38px;text-align:right">${pct}%</span></div></td></tr>`;
-    }).join('')||`<tr><td colspan="3" style="color:var(--ink-faint);text-align:center;padding:18px">데이터 없음</td></tr>`;
+      const actPct=plan.krw?Math.round(d.actKrw/plan.krw*100):0;
+      return `<tr><td>${item}</td>
+        <td>${won(d.krw)}<span class="usd">${usd(d.usd)}</span></td>
+        <td style="color:var(--green)">${won(d.actKrw)}<span class="usd">${usd(d.actUsd)}</span></td>
+        <td><div style="display:flex;align-items:center;justify-content:flex-end;gap:8px"><div class="pgbar"><div class="pgfill" style="width:${Math.min(100,pct)}%"></div></div><span style="font-family:var(--font-mono);font-size:12px;min-width:38px;text-align:right">${pct}%</span></div><div style="font-size:10.5px;color:var(--green);text-align:right;margin-top:3px">실적 ${actPct}%</div></td></tr>`;
+    }).join('')||`<tr><td colspan="4" style="color:var(--ink-faint);text-align:center;padding:18px">데이터 없음</td></tr>`;
     return `<div class="owner-block">
       <div class="owner-head">
-        <div class="ol"><span class="av">${initials(o)}</span><b>${o}</b><span class="meta">계획 ${won(plan.krw)} · ${usd(plan.usd)} / 실제 ${won(totalKrw)} · ${usd(totalUsd)}</span></div>
-        <span class="ach" style="color:${ach>=100?'var(--green)':ach>=70?'var(--amber)':'var(--red)'}">달성 ${ach}%</span>
+        <div class="ol"><span class="av">${initials(o)}</span><b>${o}</b><span class="meta">${TEAM[o]} · 계획 ${won(plan.krw)} · ${usd(plan.usd)}</span></div>
+        <div style="text-align:right">
+          <div class="ach" style="color:${ach>=100?'var(--green)':ach>=70?'var(--amber)':'var(--red)'}">추정 ${ach}%</div>
+          <div style="font-size:11px;color:var(--green);font-family:var(--font-mono);font-weight:600">실적 ${actAch}%</div>
+        </div>
       </div>
-      <table class="rtbl"><thead><tr><th>품목</th><th>매출 (원화/USD)</th><th style="text-align:right">계획 대비 비중</th></tr></thead><tbody>${rows}</tbody></table>
+      <table class="rtbl"><thead><tr><th>제품</th><th>추정(실적)</th><th>실적(선적완료)</th><th style="text-align:right">계획 대비 비중</th></tr></thead><tbody>${rows}</tbody></table>
     </div>`;
   }).join('');
 }
 
-function buildVenn(v){
-  const plan=v.plan,real=v.real;
-  if(plan===0&&real===0)return '<div class="empty">데이터 없음</div>';
-  const inter=Math.min(plan,real);
-  // sizing
-  const maxV=Math.max(plan,real,1);
-  const rPlan=40+Math.sqrt(plan/maxV)*70;
-  const rReal=40+Math.sqrt(real/maxV)*70;
-  // overlap distance: closer when intersect larger
-  const ratio=plan&&real?inter/Math.max(plan,real):0;
-  const sep=(rPlan+rReal)*(1-ratio*0.75);
-  const cx=260,cy=150;
-  const xPlan=cx-sep/2,xReal=cx+sep/2;
-  const itemsList=Object.entries(v.items).sort((a,b)=>b[1].usd-a[1].usd);
-  const itemTags=itemsList.map(([n,d])=>`<span class="vi-tag">${n} · ${usd(d.usd)}</span>`).join('');
-  const ach=plan?Math.round(real/plan*100):0;
-  return `<div class="venn-wrap">
-    <svg class="venn-svg" viewBox="0 0 ${cx*2} 300">
-      <circle cx="${xPlan}" cy="${cy}" r="${rPlan}" fill="#c9c3b4" fill-opacity="0.55" stroke="#a8a18d" stroke-width="1.5"/>
-      <circle cx="${xReal}" cy="${cy}" r="${rReal}" fill="${'#0fae9e'}" fill-opacity="0.5" stroke="#0fae9e" stroke-width="1.5"/>
-      <text x="${xPlan-rPlan*0.4}" y="${cy-rPlan-8}" text-anchor="middle" font-family="Sora" font-size="13" font-weight="600" fill="#5c6b77">계획</text>
-      <text x="${xPlan-rPlan*0.4}" y="${cy+5}" text-anchor="middle" font-family="JetBrains Mono" font-size="13" font-weight="600" fill="#15212c">${won(plan)}</text>
-      <text x="${xPlan-rPlan*0.4}" y="${cy+22}" text-anchor="middle" font-family="JetBrains Mono" font-size="10.5" fill="#8a97a1">${usd(v.plan/settings.planRate*0+0)||''}</text>
-      <text x="${xReal+rReal*0.4}" y="${cy-rReal-8}" text-anchor="middle" font-family="Sora" font-size="13" font-weight="600" fill="#0fae9e">추정(실적)</text>
-      <text x="${xReal+rReal*0.4}" y="${cy+5}" text-anchor="middle" font-family="JetBrains Mono" font-size="13" font-weight="600" fill="#0a7468">${won(real)}</text>
-      <text x="${cx}" y="${cy-4}" text-anchor="middle" font-family="Sora" font-size="11" fill="#3d4d57">달성</text>
-      <text x="${cx}" y="${cy+12}" text-anchor="middle" font-family="JetBrains Mono" font-size="13" font-weight="700" fill="${ach>=100?'#2f9e57':ach>=70?'#df8a1e':'#cf3b2e'}">${ach}%</text>
-    </svg>
-    <div class="venn-leg">
-      <div class="row"><span>계획</span><span><b>${won(plan)}</b></span></div>
-      <div class="row"><span>추정(실적)</span><span><b style="color:var(--teal)">${won(real)}</b></span></div>
-      <div class="row"><span>차질</span><span><b style="color:${real-plan>=0?'var(--green)':'var(--red)'}">${real-plan>=0?'+':''}${won(real-plan)}</b></span></div>
-      <div style="margin-top:10px;font-size:11.5px;color:var(--ink-faint)">품목별 추정(실적)</div>
-      <div class="venn-item-list">${itemTags||'<span class="vi-tag">데이터 없음</span>'}</div>
-    </div>
-  </div>`;
+function planEditor(owner){
+  const monthsToShow=revGran==='month'?[today.getMonth()]:revGran==='quarter'?(()=>{const q=Math.floor(today.getMonth()/3);return [q*3,q*3+1,q*3+2];})():[...Array(12).keys()];
+  return monthsToShow.map(mi=>{
+    const key=revYear+'-'+(mi+1);
+    const arr=(settings.planByOwner[owner]&&settings.planByOwner[owner][key])||[];
+    const rows=arr.map((p,i)=>planRow(owner,mi,i,p)).join('');
+    const total=arr.reduce((a,p)=>a+(p.product==='테라도 비용정산'?Number(p.directUsd)||0:(Number(p.qty)||0)*(Number(p.price)||0)),0);
+    return `<div style="margin-bottom:18px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <b style="font-family:var(--font-display);font-size:13px">${revYear}년 ${mi+1}월</b>
+        <div style="font-family:var(--font-mono);font-size:12px;color:var(--ink-soft)">합계 <b style="color:var(--ink)">${usd(total)}</b> · ${won(total*settings.planRate)}</div>
+      </div>
+      <table class="plan-tbl"><thead><tr><th style="width:36%">제품명</th><th style="width:14%">물량</th><th style="width:14%">단가(USD)</th><th style="width:30%">자동 계산</th><th style="width:6%"></th></tr></thead><tbody>${rows||`<tr><td colspan="5" style="color:var(--ink-faint);padding:14px;text-align:center">항목 없음</td></tr>`}</tbody></table>
+      <button class="btn btn-soft" style="margin-top:6px;font-size:12px;padding:6px 11px" onclick="addPlanRow('${owner}',${mi})">+ 항목 추가</button>
+    </div>`;
+  }).join('');
 }
+function planRow(owner,mi,idx,p){
+  const isCost=p.product==='테라도 비용정산';
+  const usdAmt=isCost?(Number(p.directUsd)||0):(Number(p.qty)||0)*(Number(p.price)||0);
+  const krwAmt=usdAmt*settings.planRate;
+  const prodOpts=['<option value="">선택</option>',...PRODUCTS.map(pr=>`<option ${pr===p.product?'selected':''}>${pr}</option>`),'<option value="__custom__">직접 입력</option>'].join('');
+  const isCustom=p.product&&!PRODUCTS.includes(p.product);
+  return `<tr>
+    <td>
+      <select onchange="updatePlan('${owner}',${mi},${idx},'product',this.value==='__custom__'?'':this.value)">${prodOpts.replace(`>${p.product}<`,p.product&&PRODUCTS.includes(p.product)?`>${p.product}<`:'')}${isCustom?`<option selected value="__custom__">직접 입력</option>`:''}</select>
+      ${isCustom?`<input style="margin-top:4px" placeholder="직접 입력" value="${p.product||''}" oninput="updatePlan('${owner}',${mi},${idx},'product',this.value)">`:''}
+    </td>
+    ${isCost
+      ? `<td colspan="2" class="num"><input type="number" step="0.01" min="0" placeholder="USD 직접 입력" value="${p.directUsd||''}" oninput="updatePlan('${owner}',${mi},${idx},'directUsd',this.value)"></td>`
+      : `<td class="num"><input type="number" min="0" value="${p.qty||''}" oninput="updatePlan('${owner}',${mi},${idx},'qty',this.value)"></td>
+         <td class="num"><input type="number" step="0.01" min="0" value="${p.price||''}" oninput="updatePlan('${owner}',${mi},${idx},'price',this.value)"></td>`}
+    <td class="calc"><span class="calc-usd">${usd(usdAmt)}</span><br><span>${won(krwAmt)}</span></td>
+    <td><button class="btn btn-soft" style="padding:4px 8px;font-size:11px" onclick="removePlanRow('${owner}',${mi},${idx})">×</button></td>
+  </tr>`;
+}
+function addPlanRow(owner,mi){const key=revYear+'-'+(mi+1);if(!settings.planByOwner[owner])settings.planByOwner[owner]={};if(!settings.planByOwner[owner][key])settings.planByOwner[owner][key]=[];settings.planByOwner[owner][key].push({product:'',qty:0,price:0,directUsd:0});saveAll();renderRevenue();}
+function removePlanRow(owner,mi,idx){const key=revYear+'-'+(mi+1);settings.planByOwner[owner][key].splice(idx,1);saveAll();renderRevenue();}
+function updatePlan(owner,mi,idx,field,val){const key=revYear+'-'+(mi+1);const r=settings.planByOwner[owner][key][idx];if(field==='product'){r.product=val;if(val==='테라도 비용정산'){r.qty=0;r.price=0;}}else{r[field]=field==='product'?val:(Number(val)||0);}saveAll();renderRevenue();}
 
 function setGran(g){revGran=g;renderRevenue();}
 function setRevOwner(o){revOwner=o;renderRevenue();}
 function setRate(k,v){settings[k]=Number(v)||0;saveAll();renderRevenue();}
-function setPlan(owner,m,v){if(!settings.planByOwner[owner])settings.planByOwner[owner]={};settings.planByOwner[owner][revYear+'-'+m]=Number(v)||0;saveAll();renderRevenue();}
+function setDim(d){revDim=d;renderRevenue();}
+
+/* ---------- AR / 매출채권 ---------- */
+let arOwner='all';
+function renderAR(){
+  // outstanding = 선적 완료 (not yet 수금 완료) - we already shipped, awaiting payment
+  // Also include those already shipped & paid for context? No, "아직 수금되지 않은" only.
+  const list=state.filter(s=>isShipped(s)&&s.status!=='수금 완료');
+  const filtered=arOwner==='all'?list:list.filter(s=>s.owner===arOwner);
+  // totals by team & owner
+  const byOwner={};OWNERS.forEach(o=>{byOwner[o]={usd:0,krw:0,count:0};});
+  const byTeam={'1팀':{usd:0,krw:0,count:0},'2팀':{usd:0,krw:0,count:0}};
+  list.forEach(s=>{const u=shipUsd(s),k=s.krwActual||Math.round(u*settings.estRate);
+    if(byOwner[s.owner]){byOwner[s.owner].usd+=u;byOwner[s.owner].krw+=k;byOwner[s.owner].count++;}
+    const t=TEAM[s.owner];if(byTeam[t]){byTeam[t].usd+=u;byTeam[t].krw+=k;byTeam[t].count++;}
+  });
+  const totalUsd=list.reduce((a,s)=>a+shipUsd(s),0);
+  const totalKrw=list.reduce((a,s)=>a+(s.krwActual||Math.round(shipUsd(s)*settings.estRate)),0);
+
+  const today_iso=iso(0);
+  const sorted=filtered.slice().sort((a,b)=>{const da=dueDate(a)||'9999',db=dueDate(b)||'9999';return da.localeCompare(db);});
+  const rows=sorted.length?sorted.map(s=>{
+    const due=dueDate(s);
+    let dueCell='—';
+    if(due){
+      const diff=daysBetween(today_iso,due);
+      if(diff<0)dueCell=`<span class="due-pill over">+${-diff}Days</span>`;
+      else if(diff===0)dueCell=`<span class="due-pill over">D-Day</span>`;
+      else if(diff<=14)dueCell=`<span class="due-pill soon">D-${diff}</span>`;
+      else dueCell=`<span class="due-pill">D-${diff}</span>`;
+    }
+    const u=shipUsd(s),k=s.krwActual||Math.round(u*settings.estRate);
+    return `<tr><td><div class="cli">${s.client}</div><div class="po">${s.po||''}</div></td>
+      <td style="font-size:12px;color:var(--ink-soft)">${s.country||'-'}</td>
+      <td><div class="owner"><span class="av">${initials(s.owner)}</span>${s.owner}</div><div style="font-size:10.5px;color:var(--ink-faint);margin-top:2px">${TEAM[s.owner]||''}</div></td>
+      <td style="font-size:12.5px">${s.item}</td>
+      <td class="r">$${u.toLocaleString()}</td>
+      <td class="r">₩${k.toLocaleString()}</td>
+      <td><div style="font-family:var(--font-mono);font-size:12px;color:var(--ink-soft)">ATD ${fmtD(s.atd)}<br>${s.inco||'-'} · ${s.terms||0}일</div></td>
+      <td><div style="font-family:var(--font-mono);font-size:12px;color:var(--ink);font-weight:600">${due?due.slice(5).replace('-','/'):'—'}</div><div style="margin-top:4px">${dueCell}</div></td>
+      <td><button class="btn btn-pri" style="padding:6px 12px;font-size:12px" onclick="openPayModal('${s.id}')">수금 등록</button></td>
+    </tr>`;
+  }).join(''):`<tr><td colspan="9" style="text-align:center;padding:38px;color:var(--ink-faint)">미수금 매출이 없습니다.</td></tr>`;
+
+  document.getElementById('arView').innerHTML=`
+    <div class="rcards">
+      <div class="rcard est"><div class="lab">전체 미수금 (원화)</div><div class="val">${won(totalKrw)}</div><div class="sub">${usd(totalUsd)} · ${list.length}건</div></div>
+      <div class="rcard plan"><div class="lab">1팀 미수금</div><div class="val">${won(byTeam['1팀'].krw)}</div><div class="sub">${usd(byTeam['1팀'].usd)} · ${byTeam['1팀'].count}건</div></div>
+      <div class="rcard plan"><div class="lab">2팀 미수금</div><div class="val">${won(byTeam['2팀'].krw)}</div><div class="sub">${usd(byTeam['2팀'].usd)} · ${byTeam['2팀'].count}건</div></div>
+      <div class="rcard gap"><div class="lab">연체 (Due 초과)</div><div class="val neg">${list.filter(s=>{const d=dueDate(s);return d&&d<today_iso;}).length}<small style="font-size:13px;color:var(--ink-faint);margin-left:4px">건</small></div><div class="sub">즉시 회수 필요</div></div>
+    </div>
+
+    <div class="owner-tabs">
+      <span style="font-size:12px;color:var(--ink-faint);padding:6px 4px">담당자별 잔여 매출채권</span>
+      <button class="chip ${arOwner==='all'?'on':''}" onclick="setArOwner('all')">팀 전체</button>
+      ${OWNERS.map(o=>`<button class="chip ${arOwner===o?'on':''}" onclick="setArOwner('${o}')"><span class="av">${initials(o)}</span>${o} <span style="color:var(--ink-faint);margin-left:4px;font-family:var(--font-mono);font-size:10.5px">${won(byOwner[o].krw)}</span></button>`).join('')}
+    </div>
+
+    <div class="board">
+      <div class="board-head"><h2>매출채권 · 수금 예정</h2><span class="count">${filtered.length}건</span></div>
+      <div style="overflow-x:auto">
+        <table class="tbl">
+          <thead><tr><th>거래처/PO</th><th>국가</th><th>담당</th><th>제품</th><th class="r">USD</th><th class="r">원화</th><th>선적/조건</th><th>수금 마감일</th><th></th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>`;
+}
+function setArOwner(o){arOwner=o;renderAR();}
 
 /* ---------- tabs & events ---------- */
-function switchTab(t){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.tab===t));document.getElementById('boardView').style.display=t==='board'?'block':'none';document.getElementById('revenueView').style.display=t==='rev'?'block':'none';if(t==='rev')renderRevenue();else renderLane();}
+function switchTab(t){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.tab===t));
+  document.getElementById('boardView').style.display=t==='board'?'block':'none';
+  document.getElementById('revenueView').style.display=t==='rev'?'block':'none';
+  document.getElementById('arView').style.display=t==='ar'?'block':'none';
+  if(t==='rev')renderRevenue();else if(t==='ar')renderAR();else renderLane();}
 document.getElementById('seg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;scope.mode=b.dataset.scope;document.querySelectorAll('#seg button').forEach(x=>x.classList.toggle('on',x===b));if(scope.mode==='person'&&!scope.person)scope.person=me;render();});
 document.getElementById('chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;scope.person=b.dataset.person;render();});
 document.getElementById('rows').addEventListener('click',e=>{if(e.target.closest('input,select,textarea,button,.ctrls,.timeline,.cmt'))return;const tr=e.target.closest('tr.row');if(!tr)return;openId=openId===tr.dataset.id?null:tr.dataset.id;render();});
 document.getElementById('boardGran').addEventListener('change',e=>{boardGran=e.target.value;boardPeriod='all';render();});
 document.getElementById('boardPeriod').addEventListener('change',e=>{boardPeriod=e.target.value;render();});
 
+/* ---------- new shipment modal ---------- */
 const ov=document.getElementById('overlay');
-function fillOwners(){document.getElementById('ownerList').innerHTML=owners().map(o=>`<option value="${o}">`).join('');}
+let fAdd={client:'',country:'',owner:'',cat1:'',cat2:'',item:''};
+function renderAddSelects(){
+  document.getElementById('f_client_box').innerHTML=soiHtml('f_client',CLIENTS,fAdd.client);
+  soiCb['f_client']=v=>{fAdd.client=v;};
+  document.getElementById('f_country_box').innerHTML=soiHtml('f_country',COUNTRIES,fAdd.country);
+  soiCb['f_country']=v=>{fAdd.country=v;};
+  document.getElementById('f_owner_box').innerHTML=soiHtml('f_owner',OWNERS,fAdd.owner);
+  soiCb['f_owner']=v=>{fAdd.owner=v;};
+  document.getElementById('f_cat1_box').innerHTML=soiHtml('f_cat1',CAT1_LIST,fAdd.cat1);
+  soiCb['f_cat1']=v=>{fAdd.cat1=v;};
+  document.getElementById('f_cat2_box').innerHTML=soiHtml('f_cat2',CAT2_LIST,fAdd.cat2);
+  soiCb['f_cat2']=v=>{fAdd.cat2=v;renderItemSelect();};
+  renderItemSelect();
+}
+function renderItemSelect(){
+  const items=fAdd.cat2&&CAT2_LIST.includes(fAdd.cat2)?productsByCat2(fAdd.cat2):PRODUCTS;
+  if(fAdd.item&&!items.includes(fAdd.item)&&fAdd.cat2)fAdd.item='';
+  document.getElementById('f_item_box').innerHTML=soiHtml('f_item',items,fAdd.item);
+  soiCb['f_item']=v=>{fAdd.item=v;if(v&&PRODUCTS.includes(v)){const c2=cat2OfProduct(v);if(c2!==fAdd.cat2){fAdd.cat2=c2;document.getElementById('f_cat2_box').innerHTML=soiHtml('f_cat2',CAT2_LIST,fAdd.cat2);soiCb['f_cat2']=v=>{fAdd.cat2=v;renderItemSelect();};}}};
+}
 function recalcAdd(){const q=Number(document.getElementById('f_qty').value)||0;const p=Number(document.getElementById('f_price').value)||0;const u=q*p;
   document.getElementById('f_usd').textContent='$'+u.toLocaleString();
   document.getElementById('f_krw').textContent='₩'+Math.round(u*settings.estRate).toLocaleString();}
 ['f_qty','f_price'].forEach(id=>document.getElementById(id).addEventListener('input',recalcAdd));
-document.getElementById('openAdd').onclick=()=>{fillOwners();document.getElementById('f_release').value=iso(1);document.getElementById('f_etd').value=iso(3);document.getElementById('f_eta').value=iso(17);document.getElementById('f_owner').value=me;document.getElementById('f_terms').value=30;recalcAdd();ov.classList.add('show');};
+document.getElementById('openAdd').onclick=()=>{
+  fAdd={client:'',country:'',owner:me,cat1:'',cat2:'',item:''};
+  renderAddSelects();
+  document.getElementById('f_release').value=iso(1);document.getElementById('f_etd').value=iso(3);document.getElementById('f_eta').value=iso(17);document.getElementById('f_terms').value=30;
+  document.getElementById('f_qty').value='';document.getElementById('f_price').value='';document.getElementById('f_po').value='';
+  recalcAdd();ov.classList.add('show');};
 const closeM=()=>ov.classList.remove('show');
 document.getElementById('closeAdd').onclick=closeM;document.getElementById('cancelAdd').onclick=closeM;
 ov.addEventListener('click',e=>{if(e.target===ov)closeM();});
 document.getElementById('shipOverlay').addEventListener('click',e=>{if(e.target.id==='shipOverlay')closeShip();});
-document.getElementById('saveAdd').onclick=()=>{const g=id=>document.getElementById(id).value;const client=g('f_client').trim();if(!client){document.getElementById('f_client').focus();return;}
-  const owner=g('f_owner').trim()||me;
-  const ship={id:'s'+Date.now(),client,po:g('f_po').trim()||'',item:g('f_item').trim()||'-',qty:Number(g('f_qty'))||0,price:Number(g('f_price'))||0,release:g('f_release')||null,etd:g('f_etd'),eta:g('f_eta'),atd:null,status:'출고 준비중',owner,inco:g('f_inco'),terms:Number(g('f_terms'))||0,shipRate:null,krwActual:null,negotiation:'',history:[{who:me,text:'선적 건 등록',amt:`USD $${(Number(g('f_qty'))*Number(g('f_price'))).toLocaleString()} (추정환율 ₩${settings.estRate.toLocaleString()})`,at:now()}],comments:[]};
-  state.unshift(ship);saveAll();closeM();['f_client','f_po','f_item','f_qty','f_price'].forEach(id=>document.getElementById(id).value='');render();};
+document.getElementById('saveAdd').onclick=()=>{
+  const client=soiValue('f_client');if(!client){alert('거래처를 선택/입력하세요');return;}
+  const country=soiValue('f_country');
+  const owner=soiValue('f_owner')||me;
+  let cat2=soiValue('f_cat2');
+  const item=soiValue('f_item');
+  const cat1=soiValue('f_cat1');
+  if(item&&PRODUCTS.includes(item)&&!cat2)cat2=cat2OfProduct(item);
+  const g=id=>document.getElementById(id).value;
+  const qty=Number(g('f_qty'))||0,price=Number(g('f_price'))||0;
+  const ship={id:'s'+Date.now(),client,country,po:g('f_po').trim()||'',item:item||'-',cat1,cat2,qty,price,release:g('f_release')||null,etd:g('f_etd'),eta:g('f_eta'),atd:null,status:'출고 준비중',owner,inco:g('f_inco'),terms:Number(g('f_terms'))||0,shipRate:null,krwActual:null,paidAt:null,negotiation:'',history:[{who:me,text:'선적 건 등록',amt:`USD $${(qty*price).toLocaleString()} (추정환율 ₩${settings.estRate.toLocaleString()})`,at:now()}],comments:[]};
+  state.unshift(ship);saveAll();closeM();render();};
 
 /* ---------- wheel picker ---------- */
 let wheelCb=null,wheelColsDef=[];
@@ -884,7 +1115,13 @@ function openDateWheel(title,iso,cb){
 }
 function openListWheel(title,items,cur,cb,fmt){openWheel(title,[{items,fmt}],[cur],vals=>cb(vals[0]));}
 
-(async()=>{const sv=await load('shipments');state=sv&&sv.length?sv:seed;state.forEach(s=>{if(s.negotiation===undefined)s.negotiation='';if(s.release===undefined)s.release=null;});const ss=await load('revsettings');settings=ss&&ss.planRate&&ss.planByOwner?ss:defaultSettings();const m=localStorage.getItem('me');if(m)me=m;fillMe();render();window.addEventListener('resize',()=>{if(document.getElementById('boardView').style.display!=='none')renderLane();});})();
+(async()=>{const sv=await load('shipments_v2');state=sv&&sv.length?sv:seed;
+  state.forEach(s=>{if(s.negotiation===undefined)s.negotiation='';if(s.release===undefined)s.release=null;if(s.country===undefined)s.country='';if(s.cat1===undefined)s.cat1='';if(s.cat2===undefined)s.cat2=cat2OfProduct(s.item);if(s.paidAt===undefined)s.paidAt=null;});
+  const ss=await load('revsettings_v2');settings=ss&&ss.planRate&&ss.planByOwner?ss:defaultSettings();
+  // ensure all owners exist in planByOwner
+  OWNERS.forEach(o=>{if(!settings.planByOwner[o])settings.planByOwner[o]={};});
+  const m=localStorage.getItem('me');if(m&&OWNERS.includes(m))me=m;
+  fillMe();render();window.addEventListener('resize',()=>{if(document.getElementById('boardView').style.display!=='none')renderLane();});})();
 </script>
 </body>
 </html>
