@@ -773,17 +773,68 @@ function recalcAdd(){const q=Number(document.getElementById('f_qty').value)||0;c
   document.getElementById('f_usd').textContent='$'+u.toLocaleString();
   document.getElementById('f_krw').textContent='₩'+Math.round(u*settings.estRate).toLocaleString();}
 ['f_qty','f_price'].forEach(id=>document.getElementById(id).addEventListener('input',recalcAdd));
-document.getElementById('openAdd').onclick=()=>{fillOwners();document.getElementById('f_etd').value=iso(3);document.getElementById('f_eta').value=iso(17);document.getElementById('f_owner').value=me;document.getElementById('f_terms').value=30;recalcAdd();ov.classList.add('show');};
+document.getElementById('openAdd').onclick=()=>{fillOwners();document.getElementById('f_release').value=iso(1);document.getElementById('f_etd').value=iso(3);document.getElementById('f_eta').value=iso(17);document.getElementById('f_owner').value=me;document.getElementById('f_terms').value=30;recalcAdd();ov.classList.add('show');};
 const closeM=()=>ov.classList.remove('show');
 document.getElementById('closeAdd').onclick=closeM;document.getElementById('cancelAdd').onclick=closeM;
 ov.addEventListener('click',e=>{if(e.target===ov)closeM();});
 document.getElementById('shipOverlay').addEventListener('click',e=>{if(e.target.id==='shipOverlay')closeShip();});
 document.getElementById('saveAdd').onclick=()=>{const g=id=>document.getElementById(id).value;const client=g('f_client').trim();if(!client){document.getElementById('f_client').focus();return;}
   const owner=g('f_owner').trim()||me;
-  const ship={id:'s'+Date.now(),client,po:g('f_po').trim()||'',item:g('f_item').trim()||'-',qty:Number(g('f_qty'))||0,price:Number(g('f_price'))||0,etd:g('f_etd'),eta:g('f_eta'),atd:null,status:'출고 준비중',owner,inco:g('f_inco'),terms:Number(g('f_terms'))||0,shipRate:null,krwActual:null,history:[{who:me,text:'선적 건 등록',amt:`USD $${(Number(g('f_qty'))*Number(g('f_price'))).toLocaleString()} (추정환율 ₩${settings.estRate.toLocaleString()})`,at:now()}],comments:[]};
+  const ship={id:'s'+Date.now(),client,po:g('f_po').trim()||'',item:g('f_item').trim()||'-',qty:Number(g('f_qty'))||0,price:Number(g('f_price'))||0,release:g('f_release')||null,etd:g('f_etd'),eta:g('f_eta'),atd:null,status:'출고 준비중',owner,inco:g('f_inco'),terms:Number(g('f_terms'))||0,shipRate:null,krwActual:null,negotiation:'',history:[{who:me,text:'선적 건 등록',amt:`USD $${(Number(g('f_qty'))*Number(g('f_price'))).toLocaleString()} (추정환율 ₩${settings.estRate.toLocaleString()})`,at:now()}],comments:[]};
   state.unshift(ship);saveAll();closeM();['f_client','f_po','f_item','f_qty','f_price'].forEach(id=>document.getElementById(id).value='');render();};
 
-(async()=>{const sv=await load('shipments');state=sv&&sv.length?sv:seed;const ss=await load('revsettings');settings=ss&&ss.planRate&&ss.planByOwner?ss:defaultSettings();const m=localStorage.getItem('me');if(m)me=m;fillMe();render();window.addEventListener('resize',()=>{if(document.getElementById('boardView').style.display!=='none')renderLane();});})();
+/* ---------- wheel picker ---------- */
+let wheelCb=null,wheelColsDef=[];
+function openWheel(title,columns,values,cb){
+  wheelCb=cb;wheelColsDef=columns;
+  document.getElementById('wheelTitle').textContent=title;
+  const box=document.getElementById('wheelCols');
+  box.innerHTML='<div class="wheel-center"></div>'+columns.map((c,ci)=>{
+    return `<div class="wheel-col" data-ci="${ci}"><div class="wpad"></div>${c.items.map(v=>`<div class="wheel-item" data-v="${v}">${c.fmt?c.fmt(v):v}</div>`).join('')}<div class="wpad"></div></div>`;
+  }).join('');
+  document.getElementById('wheelOv').classList.add('show');
+  setTimeout(()=>{
+    box.querySelectorAll('.wheel-col').forEach((col,i)=>{
+      let idx=columns[i].items.indexOf(values[i]);if(idx<0)idx=0;
+      col.scrollTop=idx*36;updateCur(col);
+      let t;col.addEventListener('scroll',()=>{clearTimeout(t);t=setTimeout(()=>{col.scrollTo({top:Math.round(col.scrollTop/36)*36,behavior:'smooth'});updateCur(col);},90);});
+      attachDrag(col);
+    });
+  },20);
+}
+function updateCur(col){const idx=Math.round(col.scrollTop/36);col.querySelectorAll('.wheel-item').forEach((el,i)=>el.classList.toggle('cur',i===idx));}
+function attachDrag(col){
+  let dragging=false,startY=0,startTop=0;
+  const down=e=>{dragging=true;startY=(e.touches?e.touches[0].clientY:e.clientY);startTop=col.scrollTop;e.preventDefault();};
+  const move=e=>{if(!dragging)return;const y=e.touches?e.touches[0].clientY:e.clientY;col.scrollTop=startTop-(y-startY);};
+  const up=()=>{if(!dragging)return;dragging=false;col.scrollTo({top:Math.round(col.scrollTop/36)*36,behavior:'smooth'});};
+  col.addEventListener('mousedown',down);window.addEventListener('mousemove',move);window.addEventListener('mouseup',up);
+}
+function closeWheel(){document.getElementById('wheelOv').classList.remove('show');wheelCb=null;}
+document.getElementById('wheelOk').onclick=()=>{
+  const cols=document.querySelectorAll('#wheelCols .wheel-col');const out=[];
+  cols.forEach((col,i)=>{const idx=Math.min(wheelColsDef[i].items.length-1,Math.max(0,Math.round(col.scrollTop/36)));out.push(wheelColsDef[i].items[idx]);});
+  if(wheelCb)wheelCb(out);closeWheel();
+};
+document.getElementById('wheelOv').addEventListener('click',e=>{if(e.target.id==='wheelOv')closeWheel();});
+function openDateWheel(title,iso,cb){
+  const d=iso?new Date(iso+'T00:00:00'):new Date();
+  const years=[];for(let y=today.getFullYear()-2;y<=today.getFullYear()+3;y++)years.push(y);
+  const months=[];for(let mm=1;mm<=12;mm++)months.push(mm);
+  const days=[];for(let dd=1;dd<=31;dd++)days.push(dd);
+  openWheel(title,[
+    {items:years,fmt:v=>v+'년'},
+    {items:months,fmt:v=>v+'월'},
+    {items:days,fmt:v=>v+'일'}
+  ],[d.getFullYear(),d.getMonth()+1,d.getDate()],vals=>{
+    const [y,m,da]=vals;const lastDay=new Date(y,m,0).getDate();
+    const s=y+'-'+String(m).padStart(2,'0')+'-'+String(Math.min(da,lastDay)).padStart(2,'0');
+    cb(s);
+  });
+}
+function openListWheel(title,items,cur,cb,fmt){openWheel(title,[{items,fmt}],[cur],vals=>cb(vals[0]));}
+
+(async()=>{const sv=await load('shipments');state=sv&&sv.length?sv:seed;state.forEach(s=>{if(s.negotiation===undefined)s.negotiation='';if(s.release===undefined)s.release=null;});const ss=await load('revsettings');settings=ss&&ss.planRate&&ss.planByOwner?ss:defaultSettings();const m=localStorage.getItem('me');if(m)me=m;fillMe();render();window.addEventListener('resize',()=>{if(document.getElementById('boardView').style.display!=='none')renderLane();});})();
 </script>
 </body>
 </html>
