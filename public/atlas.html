@@ -349,31 +349,6 @@ input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,1
   <div id="arView" style="display:none"></div>
 </div>
 
-<div class="overlay" id="overlay">
-  <div class="modal">
-    <div class="modal-head"><h3>새 선적 등록</h3><button class="x" id="closeAdd">×</button></div>
-    <div class="modal-body">
-      <div class="row2">
-        <div class="field"><label>거래처</label><div id="f_client_box"></div></div>
-        <div class="field"><label>국가</label><div id="f_country_box"></div></div>
-      </div>
-      <div class="row2">
-        <div class="field"><label>담당자</label><div id="f_owner_box"></div></div>
-        <div class="field"><label>PO 번호 <span style="color:var(--ink-faint)">(선택)</span></label><input id="f_po" placeholder="PO-2406-000"></div>
-      </div>
-      <div class="row3">
-        <div class="field"><label>구분1</label><div id="f_cat1_box"></div></div>
-        <div class="field"><label>구분2</label><div id="f_cat2_box"></div></div>
-        <div class="field"><label>제품명</label><div id="f_item_box"></div></div>
-      </div>
-      <div class="row2"><div class="field"><label>물량</label><input id="f_qty" type="number" min="0" placeholder="0"></div><div class="field"><label>단가 (USD)</label><input id="f_price" type="number" min="0" step="0.01" placeholder="0.00"></div></div>
-      <div class="row3"><div class="field"><label>출고일</label><input id="f_release" type="date"></div><div class="field"><label>ETD(예정)</label><input id="f_etd" type="date"></div><div class="field"><label>선적일 (ETA)</label><input id="f_eta" type="date"></div></div>
-      <div class="row2"><div class="field"><label>인코텀즈</label><select id="f_inco"><option>FOB</option><option>CIF</option><option>EXW</option><option>DAP</option><option>DDP</option><option>CFR</option><option>FCA</option><option>CPT</option></select></div><div class="field"><label>수금기간 (일)</label><input id="f_terms" type="number" min="0" placeholder="30"></div></div>
-      <div class="auto-calc" id="f_calc"><span>USD 매출액 <b id="f_usd">$0</b></span><span>원화 매출액 <b id="f_krw">₩0</b></span><span style="color:var(--ink-faint)">추정환율 적용</span></div>
-    </div>
-    <div class="modal-foot"><button class="btn btn-soft" id="cancelAdd">취소</button><button class="btn btn-pri" id="saveAdd">등록</button></div>
-  </div>
-</div>
 
 <div class="overlay" id="shipOverlay">
   <div class="modal" style="width:440px">
