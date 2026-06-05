@@ -848,8 +848,13 @@ function renderRevenue(){
     </div>
 
     <div class="panel">
-      <div class="panel-head"><h3>${ownerForPlan}의 계획 매출 입력 <span style="color:var(--ink-faint);font-weight:400;font-size:12px">(월별 · 품목 단가 입력시 USD/원화 자동 계산)</span></h3></div>
+      <div class="panel-head"><h3>${ownerForPlan}의 계획 매출 입력 <span style="color:var(--ink-faint);font-weight:400;font-size:12px">(국가·거래처·구분·제품을 선택하고 물량/단가 입력 → USD/원화 자동 계산)</span></h3></div>
       ${planUI}
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h3>${ownerForPlan}의 추정(실적) 입력 <span style="color:var(--ink-faint);font-weight:400;font-size:12px">(입력 항목은 선적 보드에 자동 반영 · 선적 완료 시 실적으로 전환)</span></h3></div>
+      ${estEditor(ownerForPlan)}
     </div>`;
   updateChip();}
 
