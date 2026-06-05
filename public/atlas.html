@@ -911,11 +911,11 @@ function planRow(owner,mi,idx,p){
   const isCost=p.product==='테라도 비용정산';
   const usdAmt=isCost?(Number(p.directUsd)||0):(Number(p.qty)||0)*(Number(p.price)||0);
   const krwAmt=usdAmt*settings.planRate;
-  const prodOpts=['<option value="">선택</option>',...PRODUCTS.map(pr=>`<option ${pr===p.product?'selected':''}>${pr}</option>`),'<option value="__custom__">직접 입력</option>'].join('');
-  const isCustom=p.product&&!PRODUCTS.includes(p.product);
+  const isCustom=!!(p.product&&!PRODUCTS.includes(p.product));
+  const prodOpts=['<option value="">선택</option>',...PRODUCTS.map(pr=>`<option ${pr===p.product?'selected':''}>${pr}</option>`),`<option value="__custom__" ${isCustom?'selected':''}>직접 입력</option>`].join('');
   return `<tr>
     <td>
-      <select onchange="updatePlan('${owner}',${mi},${idx},'product',this.value==='__custom__'?'':this.value)">${prodOpts.replace(`>${p.product}<`,p.product&&PRODUCTS.includes(p.product)?`>${p.product}<`:'')}${isCustom?`<option selected value="__custom__">직접 입력</option>`:''}</select>
+      <select onchange="updatePlan('${owner}',${mi},${idx},'product',this.value==='__custom__'?' ':this.value)">${prodOpts}</select>
       ${isCustom?`<input style="margin-top:4px" placeholder="직접 입력" value="${p.product||''}" oninput="updatePlan('${owner}',${mi},${idx},'product',this.value)">`:''}
     </td>
     ${isCost
