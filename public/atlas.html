@@ -1010,54 +1010,49 @@ document.getElementById('rows').addEventListener('click',e=>{if(e.target.closest
 document.getElementById('boardGran').addEventListener('change',e=>{boardGran=e.target.value;boardPeriod='all';render();});
 document.getElementById('boardPeriod').addEventListener('change',e=>{boardPeriod=e.target.value;render();});
 
-/* ---------- new shipment modal ---------- */
-const ov=document.getElementById('overlay');
-let fAdd={client:'',country:'',owner:'',cat1:'',cat2:'',item:''};
-function renderAddSelects(){
-  document.getElementById('f_client_box').innerHTML=soiHtml('f_client',CLIENTS,fAdd.client);
-  soiCb['f_client']=v=>{fAdd.client=v;};
-  document.getElementById('f_country_box').innerHTML=soiHtml('f_country',COUNTRIES,fAdd.country);
-  soiCb['f_country']=v=>{fAdd.country=v;};
-  document.getElementById('f_owner_box').innerHTML=soiHtml('f_owner',OWNERS,fAdd.owner);
-  soiCb['f_owner']=v=>{fAdd.owner=v;};
-  document.getElementById('f_cat1_box').innerHTML=soiHtml('f_cat1',CAT1_LIST,fAdd.cat1);
-  soiCb['f_cat1']=v=>{fAdd.cat1=v;};
-  document.getElementById('f_cat2_box').innerHTML=soiHtml('f_cat2',CAT2_LIST,fAdd.cat2);
-  soiCb['f_cat2']=v=>{fAdd.cat2=v;renderItemSelect();};
-  renderItemSelect();
-}
-function renderItemSelect(){
-  const items=fAdd.cat2&&CAT2_LIST.includes(fAdd.cat2)?productsByCat2(fAdd.cat2):PRODUCTS;
-  if(fAdd.item&&!items.includes(fAdd.item)&&fAdd.cat2)fAdd.item='';
-  document.getElementById('f_item_box').innerHTML=soiHtml('f_item',items,fAdd.item);
-  soiCb['f_item']=v=>{fAdd.item=v;if(v&&PRODUCTS.includes(v)){const c2=cat2OfProduct(v);if(c2!==fAdd.cat2){fAdd.cat2=c2;document.getElementById('f_cat2_box').innerHTML=soiHtml('f_cat2',CAT2_LIST,fAdd.cat2);soiCb['f_cat2']=v=>{fAdd.cat2=v;renderItemSelect();};}}};
-}
-function recalcAdd(){const q=Number(document.getElementById('f_qty').value)||0;const p=Number(document.getElementById('f_price').value)||0;const u=q*p;
-  document.getElementById('f_usd').textContent='$'+u.toLocaleString();
-  document.getElementById('f_krw').textContent='₩'+Math.round(u*settings.estRate).toLocaleString();}
-['f_qty','f_price'].forEach(id=>document.getElementById(id).addEventListener('input',recalcAdd));
-document.getElementById('openAdd').onclick=()=>{
-  fAdd={client:'',country:'',owner:me,cat1:'',cat2:'',item:''};
-  renderAddSelects();
-  document.getElementById('f_release').value=iso(1);document.getElementById('f_etd').value=iso(3);document.getElementById('f_eta').value=iso(17);document.getElementById('f_terms').value=30;
-  document.getElementById('f_qty').value='';document.getElementById('f_price').value='';document.getElementById('f_po').value='';
-  recalcAdd();ov.classList.add('show');};
-const closeM=()=>ov.classList.remove('show');
-document.getElementById('closeAdd').onclick=closeM;document.getElementById('cancelAdd').onclick=closeM;
-ov.addEventListener('click',e=>{if(e.target===ov)closeM();});
 document.getElementById('shipOverlay').addEventListener('click',e=>{if(e.target.id==='shipOverlay')closeShip();});
-document.getElementById('saveAdd').onclick=()=>{
-  const client=soiValue('f_client');if(!client){alert('거래처를 선택/입력하세요');return;}
-  const country=soiValue('f_country');
-  const owner=soiValue('f_owner')||me;
-  let cat2=soiValue('f_cat2');
-  const item=soiValue('f_item');
-  const cat1=soiValue('f_cat1');
-  if(item&&PRODUCTS.includes(item)&&!cat2)cat2=cat2OfProduct(item);
-  const g=id=>document.getElementById(id).value;
-  const qty=Number(g('f_qty'))||0,price=Number(g('f_price'))||0;
-  const ship={id:'s'+Date.now(),client,country,po:g('f_po').trim()||'',item:item||'-',cat1,cat2,qty,price,release:g('f_release')||null,etd:g('f_etd'),eta:g('f_eta'),atd:null,status:'출고 준비중',owner,inco:g('f_inco'),terms:Number(g('f_terms'))||0,shipRate:null,krwActual:null,paidAt:null,negotiation:'',history:[{who:me,text:'선적 건 등록',amt:`USD $${(qty*price).toLocaleString()} (추정환율 ₩${settings.estRate.toLocaleString()})`,at:now()}],comments:[]};
-  state.unshift(ship);saveAll();closeM();render();};
+
+/* ---------- create new shipment entry from estimate editor ---------- */
+function newShipment(owner,monthIdx,defaults){
+  const y=revYear,m=monthIdx+1;
+  const etd=y+'-'+String(m).padStart(2,'0')+'-15';
+  const eta=addDays(etd,14);
+  return {id:'s'+Date.now()+Math.floor(Math.random()*999),
+    client:defaults?.client||'',country:defaults?.country||'',po:'',
+    item:defaults?.item||'',cat1:defaults?.cat1||'',cat2:defaults?.cat2||'',
+    qty:0,price:0,release:null,etd,eta,atd:null,status:'출고 준비중',
+    owner,inco:'FOB',terms:30,shipRate:null,krwActual:null,paidAt:null,negotiation:'',
+    history:[{who:me,text:'추정(실적) 등록',at:now()}],comments:[]};
+}
+function addEstShipment(owner,monthIdx){
+  state.unshift(newShipment(owner,monthIdx));
+  saveAll();renderRevenue();
+}
+function deleteShipment(id){
+  if(!confirm('이 항목을 삭제하시겠습니까?'))return;
+  const i=state.findIndex(s=>s.id===id);if(i<0)return;
+  state.splice(i,1);saveAll();renderRevenue();
+}
+function updateShipField(id,field,val){
+  const s=find(id);if(!s)return;
+  if(field==='qty'||field==='price')s[field]=Number(val)||0;
+  else if(field==='item'){s[field]=val;if(val&&PRODUCTS.includes(val)){const c2=cat2OfProduct(val);if(!s.cat2||CAT2_LIST.includes(s.cat2))s.cat2=c2;}}
+  else s[field]=val;
+  saveAll();
+  // re-render only the calc display + badge if possible
+  const card=document.querySelector(`[data-eid="${id}"] .pc-calc`);
+  if(card){const u=usdOf(s);card.querySelector('[data-usd]').textContent='$'+u.toLocaleString();card.querySelector('[data-krw]').textContent=won(u*settings.estRate);}
+  if(field==='item'||field==='cat2')renderRevenue();
+}
+function changeShipSelect(id,field,val){
+  if(val==='__custom__'){
+    // toggle to input - re-render
+    const s=find(id);s[field]='';saveAll();renderRevenue();return;
+  }
+  updateShipField(id,field,val);
+  if(field==='cat2'||field==='item')renderRevenue();
+}
+
 
 /* ---------- wheel picker ---------- */
 let wheelCb=null,wheelColsDef=[];
