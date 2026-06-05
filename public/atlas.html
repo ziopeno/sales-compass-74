@@ -195,6 +195,16 @@ input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,1
 .venn-leg .row b{font-family:var(--font-body);font-weight:600}
 .venn-item-list{margin-top:14px;display:flex;flex-wrap:wrap;gap:6px}
 .vi-tag{font-size:11.5px;background:var(--line-soft);padding:4px 9px;border-radius:6px;color:var(--ink-soft)}
+.pgbar{display:inline-block;width:140px;height:7px;background:var(--line-soft);border-radius:4px;overflow:hidden;vertical-align:middle}
+.pgfill{height:100%;background:linear-gradient(90deg,var(--teal),#3dd0c0);border-radius:4px;transition:width .4s}
+.owner-block{margin-bottom:22px;padding-bottom:18px;border-bottom:1px dashed var(--line)}
+.owner-block:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.owner-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+.owner-head .ol{display:flex;align-items:center;gap:9px}
+.owner-head .ol .av{width:26px;height:26px;border-radius:50%;background:var(--navy-700);color:#cfe6f0;font-size:10.5px;display:flex;align-items:center;justify-content:center;font-weight:600}
+.owner-head b{font-family:var(--font-display);font-size:14px}
+.owner-head .meta{font-size:11.5px;color:var(--ink-faint);font-family:var(--font-mono)}
+.owner-head .ach{font-family:var(--font-mono);font-size:14px;font-weight:700}
 @media(max-width:760px){.metrics,.rcards{grid-template-columns:repeat(2,1fr)}.dwrap{grid-template-columns:1fr}.board{overflow-x:auto}.tbl{min-width:780px}.plan-grid{grid-template-columns:repeat(3,1fr)}.venn-wrap{grid-template-columns:1fr}}
 
 .overlay{position:fixed;inset:0;background:rgba(9,24,38,.45);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
@@ -205,6 +215,30 @@ input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,1
 .modal-head .x{background:none;border:none;font-size:22px;color:var(--ink-faint);cursor:pointer;line-height:1}
 .modal-body{padding:22px 24px}
 .modal-foot{padding:16px 24px 22px;display:flex;justify-content:flex-end;gap:9px}
+
+/* wheel picker */
+.wheel-overlay{position:fixed;inset:0;background:rgba(9,24,38,.45);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:60;padding:20px}
+.wheel-overlay.show{display:flex}
+.wheel-modal{background:var(--card);border-radius:18px;width:360px;max-width:100%;box-shadow:0 30px 80px -20px rgba(9,24,38,.5);overflow:hidden}
+.wheel-head{padding:15px 22px;font-family:var(--font-display);font-weight:600;font-size:14px;border-bottom:1px solid var(--line-soft);color:var(--ink-soft);display:flex;justify-content:space-between;align-items:center}
+.wheel-head small{font-weight:400;font-size:11px;color:var(--ink-faint)}
+.wheel-cols{display:flex;gap:8px;padding:14px 22px;position:relative;background:linear-gradient(180deg,#fafaf6,#f1ede2)}
+.wheel-center{position:absolute;left:22px;right:22px;top:50%;height:36px;transform:translateY(-50%);border-top:1px solid var(--line);border-bottom:1px solid var(--line);pointer-events:none;background:rgba(15,174,158,.07);border-radius:5px}
+.wheel-col{flex:1;height:180px;overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none;text-align:center;cursor:grab;user-select:none;position:relative;z-index:1}
+.wheel-col:active{cursor:grabbing}
+.wheel-col::-webkit-scrollbar{display:none}
+.wpad{height:72px}
+.wheel-item{height:36px;line-height:36px;font-family:var(--font-mono);font-size:13.5px;color:var(--ink-faint);scroll-snap-align:center;scroll-snap-stop:always;transition:color .15s,font-size .15s,font-weight .15s}
+.wheel-item.cur{color:var(--ink);font-weight:600;font-size:15.5px}
+.wheel-foot{padding:12px 22px 16px;display:flex;justify-content:flex-end;gap:9px;border-top:1px solid var(--line-soft);background:#fff}
+.wtrig{display:flex;align-items:center;justify-content:space-between;font-family:var(--font-mono);font-size:13px;padding:8px 11px;border:1px solid var(--line);border-radius:9px;background:#fff;cursor:pointer;color:var(--ink);width:100%;min-height:35px;transition:.12s}
+.wtrig:hover{border-color:var(--teal);background:#fafaf6}
+.wtrig.empty{color:var(--ink-faint)}
+.wtrig svg{color:var(--ink-faint);flex-shrink:0;margin-left:6px}
+.neg-area{font-family:var(--font-body);font-size:13px;width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#fffef9;color:var(--ink);outline:none;resize:vertical;min-height:70px;line-height:1.5}
+.neg-area:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,174,158,.13)}
+.neg-saved{font-size:10.5px;color:var(--teal);margin-left:8px;opacity:0;transition:opacity .25s}
+.neg-saved.on{opacity:1}
 </style>
 </head>
 <body>
@@ -279,7 +313,7 @@ input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,1
     <div class="board">
       <div class="board-head"><h2 id="boardTitle">선적 보드</h2><span class="count" id="boardCount"></span></div>
       <div style="overflow-x:auto">
-        <table class="tbl"><thead><tr><th>거래처 / PO</th><th>품목</th><th class="r">물량</th><th class="r">USD</th><th class="r">원화</th><th>출고일 → 선적일</th><th>인코텀즈/수금</th><th>상태</th><th>담당</th></tr></thead><tbody id="rows"></tbody></table>
+        <table class="tbl"><thead><tr><th>거래처 / PO</th><th>품목</th><th class="r">물량</th><th class="r">USD</th><th class="r">원화</th><th>출고 / ETD → ETA</th><th>인코텀즈/수금</th><th>상태</th><th>담당</th></tr></thead><tbody id="rows"></tbody></table>
       </div>
       <div class="empty" id="empty" style="display:none">표시할 선적 건이 없습니다.</div>
     </div>
@@ -295,7 +329,7 @@ input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,1
       <div class="row2"><div class="field"><label>거래처</label><input id="f_client" placeholder="예: ABC Trading"></div><div class="field"><label>PO 번호 <span style="color:var(--ink-faint)">(선택)</span></label><input id="f_po" placeholder="PO-2406-000"></div></div>
       <div class="field"><label>품목</label><input id="f_item" placeholder="예: 밸브 4종"></div>
       <div class="row2"><div class="field"><label>물량</label><input id="f_qty" type="number" min="0" placeholder="0"></div><div class="field"><label>단가 (USD)</label><input id="f_price" type="number" min="0" step="0.01" placeholder="0.00"></div></div>
-      <div class="row2"><div class="field"><label>출고일</label><input id="f_etd" type="date"></div><div class="field"><label>선적일 (예정)</label><input id="f_eta" type="date"></div></div>
+      <div class="row3"><div class="field"><label>출고일</label><input id="f_release" type="date"></div><div class="field"><label>ETD(예정)</label><input id="f_etd" type="date"></div><div class="field"><label>선적일 (ETA)</label><input id="f_eta" type="date"></div></div>
       <div class="row3"><div class="field"><label>인코텀즈</label><select id="f_inco"><option>FOB</option><option>CIF</option><option>EXW</option><option>DAP</option><option>DDP</option><option>CFR</option></select></div><div class="field"><label>수금기간 (일)</label><input id="f_terms" type="number" min="0" placeholder="30"></div><div class="field"><label>담당자</label><input id="f_owner" list="ownerList" placeholder="이름"><datalist id="ownerList"></datalist></div></div>
       <div class="auto-calc" id="f_calc"><span>USD 매출액 <b id="f_usd">$0</b></span><span>원화 매출액 <b id="f_krw">₩0</b></span><span style="color:var(--ink-faint)">추정환율 적용</span></div>
     </div>
@@ -313,8 +347,18 @@ input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,1
       <div class="hint">선적일 환율로 원화 매출액이 확정됩니다.</div>
     </div>
     <div class="modal-foot"><button class="btn btn-soft" onclick="closeShip()">취소</button><button class="btn btn-pri" id="sf_save">확정</button></div>
+
+</div>
+
+<div class="wheel-overlay" id="wheelOv">
+  <div class="wheel-modal">
+    <div class="wheel-head"><span id="wheelTitle"></span><small>위·아래로 드래그</small></div>
+    <div class="wheel-cols" id="wheelCols"></div>
+    <div class="wheel-foot"><button class="btn btn-soft" onclick="closeWheel()">취소</button><button class="btn btn-pri" id="wheelOk">확인</button></div>
   </div>
 </div>
+
+
 
 <script>
 const STATUSES=['출고 준비중','출고 완료','선적 완료','수금 완료'];
@@ -449,7 +493,7 @@ function renderBoard(){const list=visible(),rows=document.getElementById('rows')
       <td class="r">${s.qty.toLocaleString()}</td>
       <td class="r">$${usdOf(s).toLocaleString()}</td>
       <td class="r">₩${krwOf(s).toLocaleString()}${s.shipRate?'<div style="color:var(--ink-faint);font-size:10.5px">@₩'+s.shipRate.toLocaleString()+'</div>':''}</td>
-      <td><span class="dates">${etd} → ${fmtD(s.eta)}</span></td>
+      <td><span class="dates">${etd} → ${fmtD(s.eta)}</span>${s.release?'<div style="color:var(--ink-faint);font-size:10.5px;font-family:var(--font-mono);margin-top:2px">출고 '+fmtD(s.release)+'</div>':''}</td>
       <td style="font-size:11.5px;color:var(--ink-soft)"><b>${s.inco||'-'}</b>${s.terms?' · '+s.terms+'일':''}</td>
       <td>${badge}</td>
       <td><div class="owner"><span class="av">${initials(s.owner)}</span>${s.owner}<svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" style="margin-left:auto"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div></td>
@@ -473,23 +517,53 @@ function detailRow(s){const m=META[s.status];const isActual=m.stage==='sea'||m.s
         ${isActual?`<div class="auto-calc" style="margin-top:12px"><span>선적환율 <b>${s.shipRate?'₩'+s.shipRate.toLocaleString():'—'}</b></span><span>USD <b>$${usdOf(s).toLocaleString()}</b></span><span>확정 원화 <b>₩${(s.krwActual||0).toLocaleString()}</b></span></div>`:''}
       </div>
       <div class="ctrls">
-        <h4>일정 / 조건 변경</h4>
-        <div class="row2"><div class="field"><label>출고일 (ETD)</label><input type="date" data-etd="${s.id}" value="${s.etd}"></div><div class="field"><label>선적일 (ETA)</label><input type="date" data-eta="${s.id}" value="${s.eta}"></div></div>
-        <div class="row2"><div class="field"><label>인코텀즈</label><select data-inco="${s.id}">${['FOB','CIF','EXW','DAP','DDP','CFR'].map(x=>`<option ${x===s.inco?'selected':''}>${x}</option>`).join('')}</select></div><div class="field"><label>수금기간(일)</label><input type="number" data-terms="${s.id}" value="${s.terms||''}"></div></div>
-        <div class="field"><label>변경 사유</label><input data-reason="${s.id}" placeholder="예: 선사 부킹 지연"></div>
-        <div class="btn-row"><button class="btn btn-pri" onclick="saveDates('${s.id}')">저장</button></div>
+        <h4>일정 / 조건 변경 <span style="color:var(--ink-faint);font-weight:400;font-size:11px">(휠을 위아래로 드래그)</span></h4>
+        <div class="row3">
+          <div class="field"><label>출고일</label>${wtrigDate(s.id,'release',s.release)}</div>
+          <div class="field"><label>ETD(ATD)</label>${wtrigDate(s.id,'etd',s.etd)}</div>
+          <div class="field"><label>선적일 (ETA)</label>${wtrigDate(s.id,'eta',s.eta)}</div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>인코텀즈</label>${wtrigList(s.id,'inco',s.inco,['FOB','CIF','EXW','DAP','DDP','CFR','FCA','CPT'])}</div>
+          <div class="field"><label>수금기간 (일)</label>${wtrigList(s.id,'terms',s.terms||0,[0,7,15,30,45,60,75,90,120,150,180],v=>v+'일')}</div>
+        </div>
+        <div class="field" style="margin-top:6px">
+          <label>협의 진척사항 <span class="neg-saved" data-saved="${s.id}">✓ 저장됨</span></label>
+          <textarea class="neg-area" data-neg="${s.id}" placeholder="바이어 협의, 부킹/통관 진행, 이슈 등 자유롭게 기록 — 자동 저장" oninput="saveNeg('${s.id}')">${s.negotiation||''}</textarea>
+        </div>
       </div>
     </div>
   </div></td></tr>`;}
 
 function find(id){return state.find(s=>s.id===id);}
 function addComment(id){const inp=document.querySelector(`[data-cmt="${id}"]`);const t=inp.value.trim();if(!t)return;find(id).comments.push({who:me,text:t,at:now()});saveAll();render();}
-function saveDates(id){const s=find(id);const etd=document.querySelector(`[data-etd="${id}"]`).value,eta=document.querySelector(`[data-eta="${id}"]`).value,inco=document.querySelector(`[data-inco="${id}"]`).value,terms=Number(document.querySelector(`[data-terms="${id}"]`).value)||0,reason=document.querySelector(`[data-reason="${id}"]`).value.trim();
-  if(etd!==s.etd){s.history.push({who:me,text:'출고일 변경',amt:fmtD(s.etd)+' → '+fmtD(etd),reason:reason||undefined,at:now()});s.prevEtd=s.etd;s.etd=etd;}
-  if(eta!==s.eta){s.history.push({who:me,text:'선적일 변경',amt:fmtD(s.eta)+' → '+fmtD(eta),at:now()});s.eta=eta;}
-  if(inco!==s.inco){s.history.push({who:me,text:'인코텀즈 변경',amt:s.inco+' → '+inco,at:now()});s.inco=inco;}
-  if(terms!==s.terms){s.history.push({who:me,text:'수금기간 변경',amt:(s.terms||0)+'일 → '+terms+'일',at:now()});s.terms=terms;}
+
+function wtrigDate(id,key,val){
+  const txt=val?val.slice(0,4)+'.'+val.slice(5,7)+'.'+val.slice(8,10):'';
+  return `<button type="button" class="wtrig ${val?'':'empty'}" onclick="pickDate('${id}','${key}')">${txt||'날짜 선택'}<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2"/></svg></button>`;
+}
+function wtrigList(id,key,val,items,fmt){
+  const f=fmt||(v=>String(v));
+  const items_js=items.join(',');
+  return `<button type="button" class="wtrig ${val!==undefined&&val!==null&&val!==''?'':'empty'}" onclick='pickList("${id}","${key}",[${items.map(i=>typeof i==='number'?i:`"${i}"`).join(',')}],${fmt?'true':'false'})'>${val!==undefined&&val!==''?f(val):'선택'}<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2"/></svg></button>`;
+}
+function pickDate(id,key){const s=find(id);openDateWheel(({release:'출고일',etd:'ETD(ATD)',eta:'선적일 (ETA)'})[key],s[key],v=>updateField(id,key,v));}
+function pickList(id,key,items,withDays){
+  const s=find(id);const fmt=withDays?(v=>v+'일'):(v=>v);
+  openListWheel(key==='inco'?'인코텀즈':'수금기간',items,s[key],v=>updateField(id,key,v),fmt);
+}
+function updateField(id,key,val){const s=find(id);const old=s[key];if(String(old==null?'':old)===String(val==null?'':val))return;
+  const labels={release:'출고일',etd:'ETD(ATD)',eta:'선적일',inco:'인코텀즈',terms:'수금기간'};
+  let disp;
+  if(key==='terms')disp=(old||0)+'일 → '+(val||0)+'일';
+  else if(key==='inco')disp=(old||'-')+' → '+(val||'-');
+  else disp=(old?fmtD(old):'—')+' → '+(val?fmtD(val):'—');
+  if(key==='etd'&&old)s.prevEtd=old;
+  s[key]=val;
+  s.history.push({who:me,text:labels[key]+' 변경',amt:disp,at:now()});
   saveAll();render();}
+let negTimers={};
+function saveNeg(id){const ta=document.querySelector(`[data-neg="${id}"]`);const s=find(id);s.negotiation=ta.value;clearTimeout(negTimers[id]);negTimers[id]=setTimeout(()=>{saveAll();const tag=document.querySelector(`[data-saved="${id}"]`);if(tag){tag.classList.add('on');setTimeout(()=>tag.classList.remove('on'),1200);}},350);}
 
 let shipPendingId=null;
 function openShipModal(id){shipPendingId=id;const s=find(id);
@@ -637,10 +711,59 @@ function renderRevenue(){
     </div>
 
     <div class="panel">
+      <div class="panel-head"><h3>담당자 · 품목별 목표 달성률 <span style="color:var(--ink-faint);font-weight:400;font-size:12px">(${revGran==='month'?(today.getMonth()+1)+'월':revGran==='quarter'?'Q'+(Math.floor(today.getMonth()/3)+1):revYear+'년'} 기준)</span></h3></div>
+      ${ownerItemPanel()}
+    </div>
+
+    <div class="panel">
       <div class="panel-head"><h3>${ownerForPlan}의 계획 매출 입력 <span style="color:var(--ink-faint);font-weight:400;font-size:12px">(월별 USD · 계획환율로 원화 환산)</span></h3></div>
       <div class="plan-grid">${planCells}</div>
     </div>`;
   updateChip();}
+
+function ownerItemPanel(){
+  const Y=revYear;
+  const inP=(mi)=>{if(revGran==='year')return true;if(revGran==='quarter')return Math.floor(mi/3)===Math.floor(today.getMonth()/3);return mi===today.getMonth();};
+  const map={};
+  state.forEach(s=>{
+    if(revOwner!=='all'&&s.owner!==revOwner)return;
+    const st=META[s.status].stage;const d=(st==='factory'||st==='port')?s.etd:(s.atd||s.etd);
+    if(!d)return;const dt=new Date(d+'T00:00:00');if(dt.getFullYear()!==Y||!inP(dt.getMonth()))return;
+    const isAct=st==='sea'||st==='done';const u=usdOf(s);const rate=isAct?(s.shipRate||settings.estRate):settings.estRate;
+    if(!map[s.owner])map[s.owner]={};
+    if(!map[s.owner][s.item])map[s.owner][s.item]={usd:0,krw:0,est:0,act:0};
+    map[s.owner][s.item].usd+=u;
+    map[s.owner][s.item].krw+=isAct?(s.krwActual||u*rate):u*rate;
+    if(isAct)map[s.owner][s.item].act+=u;else map[s.owner][s.item].est+=u;
+  });
+  const planByOwner={};
+  OWNERS.forEach(o=>{const ob=settings.planByOwner[o]||{};let total=0;
+    if(revGran==='month')total=Number(ob[Y+'-'+(today.getMonth()+1)]||0);
+    else if(revGran==='quarter'){const q=Math.floor(today.getMonth()/3);for(let k=0;k<3;k++)total+=Number(ob[Y+'-'+(q*3+k+1)]||0);}
+    else for(let mi=1;mi<=12;mi++)total+=Number(ob[Y+'-'+mi]||0);
+    planByOwner[o]={usd:total,krw:total*settings.planRate};
+  });
+  const list=revOwner==='all'?OWNERS:[revOwner];
+  return list.map(o=>{
+    const items=map[o]||{};const plan=planByOwner[o]||{usd:0,krw:0};
+    const totalKrw=Object.values(items).reduce((a,b)=>a+b.krw,0);
+    const totalUsd=Object.values(items).reduce((a,b)=>a+b.usd,0);
+    const ach=plan.krw?Math.round(totalKrw/plan.krw*100):0;
+    const rows=Object.entries(items).sort((a,b)=>b[1].krw-a[1].krw).map(([item,d])=>{
+      const pct=plan.krw?Math.round(d.krw/plan.krw*100):0;
+      const status=d.act>0&&d.est===0?'실적':d.act>0?'실적+추정':'추정';
+      const sc=d.act>0&&d.est===0?'var(--green)':d.act>0?'var(--teal)':'var(--amber)';
+      return `<tr><td>${item} <span style="font-size:10.5px;color:${sc};font-weight:600;margin-left:4px">${status}</span></td><td>${won(d.krw)}<span class="usd">${usd(d.usd)}</span></td><td><div style="display:flex;align-items:center;justify-content:flex-end;gap:8px"><div class="pgbar"><div class="pgfill" style="width:${Math.min(100,pct)}%"></div></div><span style="font-family:var(--font-mono);font-size:12px;min-width:38px;text-align:right">${pct}%</span></div></td></tr>`;
+    }).join('')||`<tr><td colspan="3" style="color:var(--ink-faint);text-align:center;padding:18px">데이터 없음</td></tr>`;
+    return `<div class="owner-block">
+      <div class="owner-head">
+        <div class="ol"><span class="av">${initials(o)}</span><b>${o}</b><span class="meta">계획 ${won(plan.krw)} · ${usd(plan.usd)} / 실제 ${won(totalKrw)} · ${usd(totalUsd)}</span></div>
+        <span class="ach" style="color:${ach>=100?'var(--green)':ach>=70?'var(--amber)':'var(--red)'}">달성 ${ach}%</span>
+      </div>
+      <table class="rtbl"><thead><tr><th>품목</th><th>매출 (원화/USD)</th><th style="text-align:right">계획 대비 비중</th></tr></thead><tbody>${rows}</tbody></table>
+    </div>`;
+  }).join('');
+}
 
 function buildVenn(v){
   const plan=v.plan,real=v.real;
@@ -699,17 +822,68 @@ function recalcAdd(){const q=Number(document.getElementById('f_qty').value)||0;c
   document.getElementById('f_usd').textContent='$'+u.toLocaleString();
   document.getElementById('f_krw').textContent='₩'+Math.round(u*settings.estRate).toLocaleString();}
 ['f_qty','f_price'].forEach(id=>document.getElementById(id).addEventListener('input',recalcAdd));
-document.getElementById('openAdd').onclick=()=>{fillOwners();document.getElementById('f_etd').value=iso(3);document.getElementById('f_eta').value=iso(17);document.getElementById('f_owner').value=me;document.getElementById('f_terms').value=30;recalcAdd();ov.classList.add('show');};
+document.getElementById('openAdd').onclick=()=>{fillOwners();document.getElementById('f_release').value=iso(1);document.getElementById('f_etd').value=iso(3);document.getElementById('f_eta').value=iso(17);document.getElementById('f_owner').value=me;document.getElementById('f_terms').value=30;recalcAdd();ov.classList.add('show');};
 const closeM=()=>ov.classList.remove('show');
 document.getElementById('closeAdd').onclick=closeM;document.getElementById('cancelAdd').onclick=closeM;
 ov.addEventListener('click',e=>{if(e.target===ov)closeM();});
 document.getElementById('shipOverlay').addEventListener('click',e=>{if(e.target.id==='shipOverlay')closeShip();});
 document.getElementById('saveAdd').onclick=()=>{const g=id=>document.getElementById(id).value;const client=g('f_client').trim();if(!client){document.getElementById('f_client').focus();return;}
   const owner=g('f_owner').trim()||me;
-  const ship={id:'s'+Date.now(),client,po:g('f_po').trim()||'',item:g('f_item').trim()||'-',qty:Number(g('f_qty'))||0,price:Number(g('f_price'))||0,etd:g('f_etd'),eta:g('f_eta'),atd:null,status:'출고 준비중',owner,inco:g('f_inco'),terms:Number(g('f_terms'))||0,shipRate:null,krwActual:null,history:[{who:me,text:'선적 건 등록',amt:`USD $${(Number(g('f_qty'))*Number(g('f_price'))).toLocaleString()} (추정환율 ₩${settings.estRate.toLocaleString()})`,at:now()}],comments:[]};
+  const ship={id:'s'+Date.now(),client,po:g('f_po').trim()||'',item:g('f_item').trim()||'-',qty:Number(g('f_qty'))||0,price:Number(g('f_price'))||0,release:g('f_release')||null,etd:g('f_etd'),eta:g('f_eta'),atd:null,status:'출고 준비중',owner,inco:g('f_inco'),terms:Number(g('f_terms'))||0,shipRate:null,krwActual:null,negotiation:'',history:[{who:me,text:'선적 건 등록',amt:`USD $${(Number(g('f_qty'))*Number(g('f_price'))).toLocaleString()} (추정환율 ₩${settings.estRate.toLocaleString()})`,at:now()}],comments:[]};
   state.unshift(ship);saveAll();closeM();['f_client','f_po','f_item','f_qty','f_price'].forEach(id=>document.getElementById(id).value='');render();};
 
-(async()=>{const sv=await load('shipments');state=sv&&sv.length?sv:seed;const ss=await load('revsettings');settings=ss&&ss.planRate&&ss.planByOwner?ss:defaultSettings();const m=localStorage.getItem('me');if(m)me=m;fillMe();render();window.addEventListener('resize',()=>{if(document.getElementById('boardView').style.display!=='none')renderLane();});})();
+/* ---------- wheel picker ---------- */
+let wheelCb=null,wheelColsDef=[];
+function openWheel(title,columns,values,cb){
+  wheelCb=cb;wheelColsDef=columns;
+  document.getElementById('wheelTitle').textContent=title;
+  const box=document.getElementById('wheelCols');
+  box.innerHTML='<div class="wheel-center"></div>'+columns.map((c,ci)=>{
+    return `<div class="wheel-col" data-ci="${ci}"><div class="wpad"></div>${c.items.map(v=>`<div class="wheel-item" data-v="${v}">${c.fmt?c.fmt(v):v}</div>`).join('')}<div class="wpad"></div></div>`;
+  }).join('');
+  document.getElementById('wheelOv').classList.add('show');
+  setTimeout(()=>{
+    box.querySelectorAll('.wheel-col').forEach((col,i)=>{
+      let idx=columns[i].items.indexOf(values[i]);if(idx<0)idx=0;
+      col.scrollTop=idx*36;updateCur(col);
+      let t;col.addEventListener('scroll',()=>{clearTimeout(t);t=setTimeout(()=>{col.scrollTo({top:Math.round(col.scrollTop/36)*36,behavior:'smooth'});updateCur(col);},90);});
+      attachDrag(col);
+    });
+  },20);
+}
+function updateCur(col){const idx=Math.round(col.scrollTop/36);col.querySelectorAll('.wheel-item').forEach((el,i)=>el.classList.toggle('cur',i===idx));}
+function attachDrag(col){
+  let dragging=false,startY=0,startTop=0;
+  const down=e=>{dragging=true;startY=(e.touches?e.touches[0].clientY:e.clientY);startTop=col.scrollTop;e.preventDefault();};
+  const move=e=>{if(!dragging)return;const y=e.touches?e.touches[0].clientY:e.clientY;col.scrollTop=startTop-(y-startY);};
+  const up=()=>{if(!dragging)return;dragging=false;col.scrollTo({top:Math.round(col.scrollTop/36)*36,behavior:'smooth'});};
+  col.addEventListener('mousedown',down);window.addEventListener('mousemove',move);window.addEventListener('mouseup',up);
+}
+function closeWheel(){document.getElementById('wheelOv').classList.remove('show');wheelCb=null;}
+document.getElementById('wheelOk').onclick=()=>{
+  const cols=document.querySelectorAll('#wheelCols .wheel-col');const out=[];
+  cols.forEach((col,i)=>{const idx=Math.min(wheelColsDef[i].items.length-1,Math.max(0,Math.round(col.scrollTop/36)));out.push(wheelColsDef[i].items[idx]);});
+  if(wheelCb)wheelCb(out);closeWheel();
+};
+document.getElementById('wheelOv').addEventListener('click',e=>{if(e.target.id==='wheelOv')closeWheel();});
+function openDateWheel(title,iso,cb){
+  const d=iso?new Date(iso+'T00:00:00'):new Date();
+  const years=[];for(let y=today.getFullYear()-2;y<=today.getFullYear()+3;y++)years.push(y);
+  const months=[];for(let mm=1;mm<=12;mm++)months.push(mm);
+  const days=[];for(let dd=1;dd<=31;dd++)days.push(dd);
+  openWheel(title,[
+    {items:years,fmt:v=>v+'년'},
+    {items:months,fmt:v=>v+'월'},
+    {items:days,fmt:v=>v+'일'}
+  ],[d.getFullYear(),d.getMonth()+1,d.getDate()],vals=>{
+    const [y,m,da]=vals;const lastDay=new Date(y,m,0).getDate();
+    const s=y+'-'+String(m).padStart(2,'0')+'-'+String(Math.min(da,lastDay)).padStart(2,'0');
+    cb(s);
+  });
+}
+function openListWheel(title,items,cur,cb,fmt){openWheel(title,[{items,fmt}],[cur],vals=>cb(vals[0]));}
+
+(async()=>{const sv=await load('shipments');state=sv&&sv.length?sv:seed;state.forEach(s=>{if(s.negotiation===undefined)s.negotiation='';if(s.release===undefined)s.release=null;});const ss=await load('revsettings');settings=ss&&ss.planRate&&ss.planByOwner?ss:defaultSettings();const m=localStorage.getItem('me');if(m)me=m;fillMe();render();window.addEventListener('resize',()=>{if(document.getElementById('boardView').style.display!=='none')renderLane();});})();
 </script>
 </body>
 </html>
