@@ -244,6 +244,26 @@ input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,1
 .soi{display:flex;gap:6px}
 .soi select{flex:1}
 .soi input{flex:1}
+.plan-card{background:#fbf9f2;border:1px solid var(--line-soft);border-radius:11px;padding:13px 14px;margin-bottom:10px;position:relative}
+.plan-card.est{background:#f3faf8;border-color:#d2ece7}
+.pc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.pc-grid .fld label{display:block;font-size:10.5px;color:var(--ink-faint);margin-bottom:3px;font-weight:500}
+.pc-grid select,.pc-grid input{padding:6px 8px;font-size:12px}
+.pc-grid .fld>div{display:flex;flex-direction:column;gap:3px}
+.pc-foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:9px;border-top:1px dashed var(--line);flex-wrap:wrap;gap:8px}
+.pc-calc{font-family:var(--font-mono);font-size:12px;color:var(--ink-soft)}
+.pc-calc b{color:var(--ink);font-weight:600}
+.pc-del{background:none;border:none;color:var(--ink-faint);font-size:18px;cursor:pointer;padding:2px 8px;border-radius:5px;line-height:1}
+.pc-del:hover{background:#fbe6e3;color:var(--red)}
+.pc-qp{display:flex;gap:4px}
+.pc-qp input{flex:1}
+.month-block{margin-bottom:20px;padding:14px;background:#fff;border:1px solid var(--line);border-radius:13px}
+.month-block .mb-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+.month-block .mb-head b{font-family:var(--font-display);font-size:13.5px}
+.month-block .mb-tot{font-family:var(--font-mono);font-size:12px;color:var(--ink-soft)}
+.pc-add{font-family:var(--font-body);font-size:12px;color:var(--teal);background:none;border:1px dashed var(--teal);padding:8px 14px;border-radius:9px;cursor:pointer;width:100%;font-weight:500;transition:.12s}
+.pc-add:hover{background:rgba(15,174,158,.06)}
+@media(max-width:760px){.pc-grid{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -313,7 +333,7 @@ input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,1
         <select id="boardPeriod"></select>
       </div>
       <div class="spacer"></div>
-      <button class="btn-add" id="openAdd"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>선적 등록</button>
+      <div style="font-size:11.5px;color:var(--ink-faint);font-style:italic">선적 건은 매출 현황 > 추정(실적) 입력에서 추가됩니다</div>
     </div>
     <div class="metrics" id="metrics"></div>
     <div class="board">
@@ -329,31 +349,6 @@ input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,1
   <div id="arView" style="display:none"></div>
 </div>
 
-<div class="overlay" id="overlay">
-  <div class="modal">
-    <div class="modal-head"><h3>새 선적 등록</h3><button class="x" id="closeAdd">×</button></div>
-    <div class="modal-body">
-      <div class="row2">
-        <div class="field"><label>거래처</label><div id="f_client_box"></div></div>
-        <div class="field"><label>국가</label><div id="f_country_box"></div></div>
-      </div>
-      <div class="row2">
-        <div class="field"><label>담당자</label><div id="f_owner_box"></div></div>
-        <div class="field"><label>PO 번호 <span style="color:var(--ink-faint)">(선택)</span></label><input id="f_po" placeholder="PO-2406-000"></div>
-      </div>
-      <div class="row3">
-        <div class="field"><label>구분1</label><div id="f_cat1_box"></div></div>
-        <div class="field"><label>구분2</label><div id="f_cat2_box"></div></div>
-        <div class="field"><label>제품명</label><div id="f_item_box"></div></div>
-      </div>
-      <div class="row2"><div class="field"><label>물량</label><input id="f_qty" type="number" min="0" placeholder="0"></div><div class="field"><label>단가 (USD)</label><input id="f_price" type="number" min="0" step="0.01" placeholder="0.00"></div></div>
-      <div class="row3"><div class="field"><label>출고일</label><input id="f_release" type="date"></div><div class="field"><label>ETD(예정)</label><input id="f_etd" type="date"></div><div class="field"><label>선적일 (ETA)</label><input id="f_eta" type="date"></div></div>
-      <div class="row2"><div class="field"><label>인코텀즈</label><select id="f_inco"><option>FOB</option><option>CIF</option><option>EXW</option><option>DAP</option><option>DDP</option><option>CFR</option><option>FCA</option><option>CPT</option></select></div><div class="field"><label>수금기간 (일)</label><input id="f_terms" type="number" min="0" placeholder="30"></div></div>
-      <div class="auto-calc" id="f_calc"><span>USD 매출액 <b id="f_usd">$0</b></span><span>원화 매출액 <b id="f_krw">₩0</b></span><span style="color:var(--ink-faint)">추정환율 적용</span></div>
-    </div>
-    <div class="modal-foot"><button class="btn btn-soft" id="cancelAdd">취소</button><button class="btn btn-pri" id="saveAdd">등록</button></div>
-  </div>
-</div>
 
 <div class="overlay" id="shipOverlay">
   <div class="modal" style="width:440px">
@@ -730,15 +725,27 @@ function dimKey(s,dim){
   return '-';
 }
 
+function planEntriesInPeriod(){
+  const months=periodMonths();
+  const owners=revOwner==='all'?OWNERS:[revOwner];
+  const out=[];
+  owners.forEach(o=>{
+    months.forEach(mi=>{
+      const key=revYear+'-'+(mi+1);
+      const arr=(settings.planByOwner[o]&&settings.planByOwner[o][key])||[];
+      arr.forEach(p=>{
+        const u=p.product==='테라도 비용정산'?(Number(p.directUsd)||0):(Number(p.qty)||0)*(Number(p.price)||0);
+        out.push({owner:o,team:TEAM[o]||'-',country:p.country||'-',cat1:p.cat1||'-',cat2:p.cat2||cat2OfProduct(p.product)||'-',client:p.client||'-',item:p.product||'-',usdAmt:u,krwAmt:u*settings.planRate});
+      });
+    });
+  });
+  return out;
+}
+
 function breakdownByDim(dim){
   const months=periodMonths();
-  // plan total (per owner) for the period
-  const ownersForPlan=revOwner==='all'?OWNERS:[revOwner];
-  // Plan only has owner dimension; for non-owner/team dims we show "—"
-  const planByOwner={};
-  ownersForPlan.forEach(o=>{planByOwner[o]=months.reduce((a,mi)=>a+planUsdFor(o,mi),0);});
-
   const groups={};
+  // Shipment-based est/act
   state.forEach(s=>{
     if(revOwner!=='all'&&s.owner!==revOwner)return;
     const mi=shipmentMonth(s);if(mi<0||!months.includes(mi))return;
@@ -747,13 +754,13 @@ function breakdownByDim(dim){
     groups[k].estUsd+=u;groups[k].estKrw+=kr;
     if(isShipped(s)){groups[k].actUsd+=u;groups[k].actKrw+=kr;}
   });
-  // Map plan totals by dim if dim is owner/team
-  if(dim==='owner'){
-    Object.entries(planByOwner).forEach(([o,u])=>{if(!groups[o])groups[o]={estUsd:0,estKrw:0,actUsd:0,actKrw:0,planUsd:0,planKrw:0};groups[o].planUsd=u;groups[o].planKrw=u*settings.planRate;});
-  }else if(dim==='team'){
-    Object.entries(planByOwner).forEach(([o,u])=>{const t=TEAM[o]||'-';if(!groups[t])groups[t]={estUsd:0,estKrw:0,actUsd:0,actKrw:0,planUsd:0,planKrw:0};groups[t].planUsd+=u;groups[t].planKrw+=u*settings.planRate;});
-  }
-  return Object.entries(groups).sort((a,b)=>b[1].estKrw-a[1].estKrw);
+  // Plan-based aggregation across all dims
+  planEntriesInPeriod().forEach(p=>{
+    const k=p[dim]||'-';
+    if(!groups[k])groups[k]={estUsd:0,estKrw:0,actUsd:0,actKrw:0,planUsd:0,planKrw:0};
+    groups[k].planUsd+=p.usdAmt;groups[k].planKrw+=p.krwAmt;
+  });
+  return Object.entries(groups).sort((a,b)=>(b[1].planKrw+b[1].estKrw)-(a[1].planKrw+a[1].estKrw));
 }
 
 function renderRevenue(){
@@ -841,8 +848,13 @@ function renderRevenue(){
     </div>
 
     <div class="panel">
-      <div class="panel-head"><h3>${ownerForPlan}의 계획 매출 입력 <span style="color:var(--ink-faint);font-weight:400;font-size:12px">(월별 · 품목 단가 입력시 USD/원화 자동 계산)</span></h3></div>
+      <div class="panel-head"><h3>${ownerForPlan}의 계획 매출 입력 <span style="color:var(--ink-faint);font-weight:400;font-size:12px">(국가·거래처·구분·제품을 선택하고 물량/단가 입력 → USD/원화 자동 계산)</span></h3></div>
       ${planUI}
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h3>${ownerForPlan}의 추정(실적) 입력 <span style="color:var(--ink-faint);font-weight:400;font-size:12px">(입력 항목은 선적 보드에 자동 반영 · 선적 완료 시 실적으로 전환)</span></h3></div>
+      ${estEditor(ownerForPlan)}
     </div>`;
   updateChip();}
 
@@ -890,45 +902,113 @@ function ownerItemPanel(){
   }).join('');
 }
 
+/* ---- shared select-with-direct-input renderer for plan/est cards ---- */
+function selWithCustom(items,val,handler){
+  const isCustom=val&&!items.includes(val);
+  const opts=['<option value="">선택</option>',
+    ...items.map(i=>`<option value="${i.replace(/"/g,'&quot;')}" ${i===val?'selected':''}>${i}</option>`),
+    `<option value="__custom__" ${isCustom?'selected':''}>직접 입력</option>`].join('');
+  return `<select onchange="${handler}(this.value)">${opts}</select>${isCustom?`<input style="margin-top:3px" placeholder="직접 입력" value="${(val||'').replace(/"/g,'&quot;')}" oninput="${handler}(this.value)">`:''}`;
+}
+
 function planEditor(owner){
   const monthsToShow=revGran==='month'?[today.getMonth()]:revGran==='quarter'?(()=>{const q=Math.floor(today.getMonth()/3);return [q*3,q*3+1,q*3+2];})():[...Array(12).keys()];
   return monthsToShow.map(mi=>{
     const key=revYear+'-'+(mi+1);
     const arr=(settings.planByOwner[owner]&&settings.planByOwner[owner][key])||[];
-    const rows=arr.map((p,i)=>planRow(owner,mi,i,p)).join('');
+    const cards=arr.map((p,i)=>planCard(owner,mi,i,p)).join('');
     const total=arr.reduce((a,p)=>a+(p.product==='테라도 비용정산'?Number(p.directUsd)||0:(Number(p.qty)||0)*(Number(p.price)||0)),0);
-    return `<div style="margin-bottom:18px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <b style="font-family:var(--font-display);font-size:13px">${revYear}년 ${mi+1}월</b>
-        <div style="font-family:var(--font-mono);font-size:12px;color:var(--ink-soft)">합계 <b style="color:var(--ink)">${usd(total)}</b> · ${won(total*settings.planRate)}</div>
+    return `<div class="month-block">
+      <div class="mb-head"><b>${revYear}년 ${mi+1}월 · ${arr.length}건</b>
+        <div class="mb-tot">합계 <b style="color:var(--ink)">${usd(total)}</b> · ${won(total*settings.planRate)}</div>
       </div>
-      <table class="plan-tbl"><thead><tr><th style="width:36%">제품명</th><th style="width:14%">물량</th><th style="width:14%">단가(USD)</th><th style="width:30%">자동 계산</th><th style="width:6%"></th></tr></thead><tbody>${rows||`<tr><td colspan="5" style="color:var(--ink-faint);padding:14px;text-align:center">항목 없음</td></tr>`}</tbody></table>
-      <button class="btn btn-soft" style="margin-top:6px;font-size:12px;padding:6px 11px" onclick="addPlanRow('${owner}',${mi})">+ 항목 추가</button>
+      ${cards||`<div style="color:var(--ink-faint);text-align:center;padding:18px;font-size:12.5px">계획 항목이 없습니다</div>`}
+      <button class="pc-add" onclick="addPlanRow('${owner}',${mi})">+ 계획 항목 추가</button>
     </div>`;
   }).join('');
 }
-function planRow(owner,mi,idx,p){
+function planCard(owner,mi,idx,p){
   const isCost=p.product==='테라도 비용정산';
   const usdAmt=isCost?(Number(p.directUsd)||0):(Number(p.qty)||0)*(Number(p.price)||0);
   const krwAmt=usdAmt*settings.planRate;
-  const isCustom=!!(p.product&&!PRODUCTS.includes(p.product));
-  const prodOpts=['<option value="">선택</option>',...PRODUCTS.map(pr=>`<option ${pr===p.product?'selected':''}>${pr}</option>`),`<option value="__custom__" ${isCustom?'selected':''}>직접 입력</option>`].join('');
-  return `<tr>
-    <td>
-      <select onchange="updatePlan('${owner}',${mi},${idx},'product',this.value==='__custom__'?' ':this.value)">${prodOpts}</select>
-      ${isCustom?`<input style="margin-top:4px" placeholder="직접 입력" value="${p.product||''}" oninput="updatePlan('${owner}',${mi},${idx},'product',this.value)">`:''}
-    </td>
-    ${isCost
-      ? `<td colspan="2" class="num"><input type="number" step="0.01" min="0" placeholder="USD 직접 입력" value="${p.directUsd||''}" oninput="updatePlan('${owner}',${mi},${idx},'directUsd',this.value)"></td>`
-      : `<td class="num"><input type="number" min="0" value="${p.qty||''}" oninput="updatePlan('${owner}',${mi},${idx},'qty',this.value)"></td>
-         <td class="num"><input type="number" step="0.01" min="0" value="${p.price||''}" oninput="updatePlan('${owner}',${mi},${idx},'price',this.value)"></td>`}
-    <td class="calc"><span class="calc-usd">${usd(usdAmt)}</span><br><span>${won(krwAmt)}</span></td>
-    <td><button class="btn btn-soft" style="padding:4px 8px;font-size:11px" onclick="removePlanRow('${owner}',${mi},${idx})">×</button></td>
-  </tr>`;
+  const h=f=>`(v=>updatePlan('${owner}',${mi},${idx},'${f}',v==='__custom__'?'':v))`;
+  return `<div class="plan-card">
+    <div class="pc-grid">
+      <div class="fld"><label>국가</label><div>${selWithCustom(COUNTRIES,p.country||'',h('country'))}</div></div>
+      <div class="fld"><label>거래처</label><div>${selWithCustom(CLIENTS,p.client||'',h('client'))}</div></div>
+      <div class="fld"><label>구분1</label><div>${selWithCustom(CAT1_LIST,p.cat1||'',h('cat1'))}</div></div>
+    </div>
+    <div class="pc-grid" style="margin-top:8px">
+      <div class="fld"><label>구분2</label><div>${selWithCustom(CAT2_LIST,p.cat2||'',h('cat2'))}</div></div>
+      <div class="fld"><label>제품명</label><div>${selWithCustom(p.cat2&&CAT2_LIST.includes(p.cat2)?productsByCat2(p.cat2):PRODUCTS,p.product||'',h('product'))}</div></div>
+      <div class="fld"><label>${isCost?'USD 직접 입력':'물량 / 단가(USD)'}</label>
+        ${isCost
+          ? `<input type="number" step="0.01" min="0" placeholder="USD" value="${p.directUsd||''}" oninput="updatePlan('${owner}',${mi},${idx},'directUsd',this.value)">`
+          : `<div class="pc-qp"><input type="number" min="0" placeholder="물량" value="${p.qty||''}" oninput="updatePlan('${owner}',${mi},${idx},'qty',this.value)"><input type="number" step="0.01" min="0" placeholder="단가" value="${p.price||''}" oninput="updatePlan('${owner}',${mi},${idx},'price',this.value)"></div>`}
+      </div>
+    </div>
+    <div class="pc-foot">
+      <span class="pc-calc">USD <b>${usd(usdAmt)}</b> · <b>${won(krwAmt)}</b> <span style="color:var(--ink-faint);margin-left:6px">@₩${settings.planRate.toLocaleString()}</span></span>
+      <button class="pc-del" onclick="removePlanRow('${owner}',${mi},${idx})">×</button>
+    </div>
+  </div>`;
 }
-function addPlanRow(owner,mi){const key=revYear+'-'+(mi+1);if(!settings.planByOwner[owner])settings.planByOwner[owner]={};if(!settings.planByOwner[owner][key])settings.planByOwner[owner][key]=[];settings.planByOwner[owner][key].push({product:'',qty:0,price:0,directUsd:0});saveAll();renderRevenue();}
+function addPlanRow(owner,mi){const key=revYear+'-'+(mi+1);if(!settings.planByOwner[owner])settings.planByOwner[owner]={};if(!settings.planByOwner[owner][key])settings.planByOwner[owner][key]=[];settings.planByOwner[owner][key].push({country:'',client:'',cat1:'',cat2:'',product:'',qty:0,price:0,directUsd:0});saveAll();renderRevenue();}
 function removePlanRow(owner,mi,idx){const key=revYear+'-'+(mi+1);settings.planByOwner[owner][key].splice(idx,1);saveAll();renderRevenue();}
-function updatePlan(owner,mi,idx,field,val){const key=revYear+'-'+(mi+1);const r=settings.planByOwner[owner][key][idx];if(field==='product'){r.product=val;if(val==='테라도 비용정산'){r.qty=0;r.price=0;}}else{r[field]=field==='product'?val:(Number(val)||0);}saveAll();renderRevenue();}
+function updatePlan(owner,mi,idx,field,val){
+  const key=revYear+'-'+(mi+1);const r=settings.planByOwner[owner][key][idx];
+  if(['country','client','cat1','cat2','product'].includes(field)){
+    r[field]=val;
+    if(field==='product'){
+      if(val==='테라도 비용정산'){r.qty=0;r.price=0;}
+      if(val&&PRODUCTS.includes(val)){const c2=cat2OfProduct(val);if(!r.cat2||CAT2_LIST.includes(r.cat2))r.cat2=c2;}
+    }
+  }else{
+    r[field]=Number(val)||0;
+  }
+  saveAll();renderRevenue();
+}
+
+/* ---- estimate (실적) editor: creates/edits shipment entries in state ---- */
+function estEditor(owner){
+  const months=revGran==='month'?[today.getMonth()]:revGran==='quarter'?(()=>{const q=Math.floor(today.getMonth()/3);return [q*3,q*3+1,q*3+2];})():[...Array(12).keys()];
+  return months.map(mi=>{
+    const entries=state.filter(s=>s.owner===owner&&shipmentMonth(s)===mi);
+    const cards=entries.map(s=>estCard(s)).join('');
+    const total=entries.reduce((a,s)=>a+usdOf(s),0);
+    return `<div class="month-block">
+      <div class="mb-head"><b>${revYear}년 ${mi+1}월 · ${entries.length}건</b>
+        <div class="mb-tot">합계 <b style="color:var(--ink)">${usd(total)}</b> · ${won(total*settings.estRate)} <span style="color:var(--ink-faint)">@추정환율</span></div>
+      </div>
+      ${cards||`<div style="color:var(--ink-faint);text-align:center;padding:18px;font-size:12.5px">추정(실적) 항목이 없습니다</div>`}
+      <button class="pc-add" onclick="addEstShipment('${owner}',${mi})">+ 추정(실적) 항목 추가 (→ 선적 보드)</button>
+    </div>`;
+  }).join('');
+}
+function estCard(s){
+  const u=usdOf(s);const m=META[s.status];
+  const items=s.cat2&&CAT2_LIST.includes(s.cat2)?productsByCat2(s.cat2):PRODUCTS;
+  const h=f=>`(v=>changeShipSelect('${s.id}','${f}',v))`;
+  return `<div class="plan-card est" data-eid="${s.id}">
+    <div class="pc-grid">
+      <div class="fld"><label>국가</label><div>${selWithCustom(COUNTRIES,s.country||'',h('country'))}</div></div>
+      <div class="fld"><label>거래처</label><div>${selWithCustom(CLIENTS,s.client||'',h('client'))}</div></div>
+      <div class="fld"><label>구분1</label><div>${selWithCustom(CAT1_LIST,s.cat1||'',h('cat1'))}</div></div>
+    </div>
+    <div class="pc-grid" style="margin-top:8px">
+      <div class="fld"><label>구분2</label><div>${selWithCustom(CAT2_LIST,s.cat2||'',h('cat2'))}</div></div>
+      <div class="fld"><label>제품명</label><div>${selWithCustom(items,s.item||'',h('item'))}</div></div>
+      <div class="fld"><label>물량 / 단가(USD)</label>
+        <div class="pc-qp"><input type="number" min="0" placeholder="물량" value="${s.qty||''}" oninput="updateShipField('${s.id}','qty',this.value)"><input type="number" step="0.01" min="0" placeholder="단가" value="${s.price||''}" oninput="updateShipField('${s.id}','price',this.value)"></div>
+      </div>
+    </div>
+    <div class="pc-foot">
+      <span class="pc-calc">USD <b data-usd>$${u.toLocaleString()}</b> · <b data-krw>${won(u*settings.estRate)}</b> <span class="badge ${m.cls}" style="margin-left:8px">${s.status}</span></span>
+      <button class="pc-del" onclick="deleteShipment('${s.id}')">×</button>
+    </div>
+  </div>`;
+}
+
 
 function setGran(g){revGran=g;renderRevenue();}
 function setRevOwner(o){revOwner=o;renderRevenue();}
@@ -1015,54 +1095,49 @@ document.getElementById('rows').addEventListener('click',e=>{if(e.target.closest
 document.getElementById('boardGran').addEventListener('change',e=>{boardGran=e.target.value;boardPeriod='all';render();});
 document.getElementById('boardPeriod').addEventListener('change',e=>{boardPeriod=e.target.value;render();});
 
-/* ---------- new shipment modal ---------- */
-const ov=document.getElementById('overlay');
-let fAdd={client:'',country:'',owner:'',cat1:'',cat2:'',item:''};
-function renderAddSelects(){
-  document.getElementById('f_client_box').innerHTML=soiHtml('f_client',CLIENTS,fAdd.client);
-  soiCb['f_client']=v=>{fAdd.client=v;};
-  document.getElementById('f_country_box').innerHTML=soiHtml('f_country',COUNTRIES,fAdd.country);
-  soiCb['f_country']=v=>{fAdd.country=v;};
-  document.getElementById('f_owner_box').innerHTML=soiHtml('f_owner',OWNERS,fAdd.owner);
-  soiCb['f_owner']=v=>{fAdd.owner=v;};
-  document.getElementById('f_cat1_box').innerHTML=soiHtml('f_cat1',CAT1_LIST,fAdd.cat1);
-  soiCb['f_cat1']=v=>{fAdd.cat1=v;};
-  document.getElementById('f_cat2_box').innerHTML=soiHtml('f_cat2',CAT2_LIST,fAdd.cat2);
-  soiCb['f_cat2']=v=>{fAdd.cat2=v;renderItemSelect();};
-  renderItemSelect();
-}
-function renderItemSelect(){
-  const items=fAdd.cat2&&CAT2_LIST.includes(fAdd.cat2)?productsByCat2(fAdd.cat2):PRODUCTS;
-  if(fAdd.item&&!items.includes(fAdd.item)&&fAdd.cat2)fAdd.item='';
-  document.getElementById('f_item_box').innerHTML=soiHtml('f_item',items,fAdd.item);
-  soiCb['f_item']=v=>{fAdd.item=v;if(v&&PRODUCTS.includes(v)){const c2=cat2OfProduct(v);if(c2!==fAdd.cat2){fAdd.cat2=c2;document.getElementById('f_cat2_box').innerHTML=soiHtml('f_cat2',CAT2_LIST,fAdd.cat2);soiCb['f_cat2']=v=>{fAdd.cat2=v;renderItemSelect();};}}};
-}
-function recalcAdd(){const q=Number(document.getElementById('f_qty').value)||0;const p=Number(document.getElementById('f_price').value)||0;const u=q*p;
-  document.getElementById('f_usd').textContent='$'+u.toLocaleString();
-  document.getElementById('f_krw').textContent='₩'+Math.round(u*settings.estRate).toLocaleString();}
-['f_qty','f_price'].forEach(id=>document.getElementById(id).addEventListener('input',recalcAdd));
-document.getElementById('openAdd').onclick=()=>{
-  fAdd={client:'',country:'',owner:me,cat1:'',cat2:'',item:''};
-  renderAddSelects();
-  document.getElementById('f_release').value=iso(1);document.getElementById('f_etd').value=iso(3);document.getElementById('f_eta').value=iso(17);document.getElementById('f_terms').value=30;
-  document.getElementById('f_qty').value='';document.getElementById('f_price').value='';document.getElementById('f_po').value='';
-  recalcAdd();ov.classList.add('show');};
-const closeM=()=>ov.classList.remove('show');
-document.getElementById('closeAdd').onclick=closeM;document.getElementById('cancelAdd').onclick=closeM;
-ov.addEventListener('click',e=>{if(e.target===ov)closeM();});
 document.getElementById('shipOverlay').addEventListener('click',e=>{if(e.target.id==='shipOverlay')closeShip();});
-document.getElementById('saveAdd').onclick=()=>{
-  const client=soiValue('f_client');if(!client){alert('거래처를 선택/입력하세요');return;}
-  const country=soiValue('f_country');
-  const owner=soiValue('f_owner')||me;
-  let cat2=soiValue('f_cat2');
-  const item=soiValue('f_item');
-  const cat1=soiValue('f_cat1');
-  if(item&&PRODUCTS.includes(item)&&!cat2)cat2=cat2OfProduct(item);
-  const g=id=>document.getElementById(id).value;
-  const qty=Number(g('f_qty'))||0,price=Number(g('f_price'))||0;
-  const ship={id:'s'+Date.now(),client,country,po:g('f_po').trim()||'',item:item||'-',cat1,cat2,qty,price,release:g('f_release')||null,etd:g('f_etd'),eta:g('f_eta'),atd:null,status:'출고 준비중',owner,inco:g('f_inco'),terms:Number(g('f_terms'))||0,shipRate:null,krwActual:null,paidAt:null,negotiation:'',history:[{who:me,text:'선적 건 등록',amt:`USD $${(qty*price).toLocaleString()} (추정환율 ₩${settings.estRate.toLocaleString()})`,at:now()}],comments:[]};
-  state.unshift(ship);saveAll();closeM();render();};
+
+/* ---------- create new shipment entry from estimate editor ---------- */
+function newShipment(owner,monthIdx,defaults){
+  const y=revYear,m=monthIdx+1;
+  const etd=y+'-'+String(m).padStart(2,'0')+'-15';
+  const eta=addDays(etd,14);
+  return {id:'s'+Date.now()+Math.floor(Math.random()*999),
+    client:defaults?.client||'',country:defaults?.country||'',po:'',
+    item:defaults?.item||'',cat1:defaults?.cat1||'',cat2:defaults?.cat2||'',
+    qty:0,price:0,release:null,etd,eta,atd:null,status:'출고 준비중',
+    owner,inco:'FOB',terms:30,shipRate:null,krwActual:null,paidAt:null,negotiation:'',
+    history:[{who:me,text:'추정(실적) 등록',at:now()}],comments:[]};
+}
+function addEstShipment(owner,monthIdx){
+  state.unshift(newShipment(owner,monthIdx));
+  saveAll();renderRevenue();
+}
+function deleteShipment(id){
+  if(!confirm('이 항목을 삭제하시겠습니까?'))return;
+  const i=state.findIndex(s=>s.id===id);if(i<0)return;
+  state.splice(i,1);saveAll();renderRevenue();
+}
+function updateShipField(id,field,val){
+  const s=find(id);if(!s)return;
+  if(field==='qty'||field==='price')s[field]=Number(val)||0;
+  else if(field==='item'){s[field]=val;if(val&&PRODUCTS.includes(val)){const c2=cat2OfProduct(val);if(!s.cat2||CAT2_LIST.includes(s.cat2))s.cat2=c2;}}
+  else s[field]=val;
+  saveAll();
+  // re-render only the calc display + badge if possible
+  const card=document.querySelector(`[data-eid="${id}"] .pc-calc`);
+  if(card){const u=usdOf(s);card.querySelector('[data-usd]').textContent='$'+u.toLocaleString();card.querySelector('[data-krw]').textContent=won(u*settings.estRate);}
+  if(field==='item'||field==='cat2')renderRevenue();
+}
+function changeShipSelect(id,field,val){
+  if(val==='__custom__'){
+    // toggle to input - re-render
+    const s=find(id);s[field]='';saveAll();renderRevenue();return;
+  }
+  updateShipField(id,field,val);
+  if(field==='cat2'||field==='item')renderRevenue();
+}
+
 
 /* ---------- wheel picker ---------- */
 let wheelCb=null,wheelColsDef=[];
