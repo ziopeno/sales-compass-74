@@ -507,11 +507,20 @@ function detailRow(s){const m=META[s.status];const isActual=m.stage==='sea'||m.s
         ${isActual?`<div class="auto-calc" style="margin-top:12px"><span>선적환율 <b>${s.shipRate?'₩'+s.shipRate.toLocaleString():'—'}</b></span><span>USD <b>$${usdOf(s).toLocaleString()}</b></span><span>확정 원화 <b>₩${(s.krwActual||0).toLocaleString()}</b></span></div>`:''}
       </div>
       <div class="ctrls">
-        <h4>일정 / 조건 변경</h4>
-        <div class="row2"><div class="field"><label>출고일 (ETD)</label><input type="date" data-etd="${s.id}" value="${s.etd}"></div><div class="field"><label>선적일 (ETA)</label><input type="date" data-eta="${s.id}" value="${s.eta}"></div></div>
-        <div class="row2"><div class="field"><label>인코텀즈</label><select data-inco="${s.id}">${['FOB','CIF','EXW','DAP','DDP','CFR'].map(x=>`<option ${x===s.inco?'selected':''}>${x}</option>`).join('')}</select></div><div class="field"><label>수금기간(일)</label><input type="number" data-terms="${s.id}" value="${s.terms||''}"></div></div>
-        <div class="field"><label>변경 사유</label><input data-reason="${s.id}" placeholder="예: 선사 부킹 지연"></div>
-        <div class="btn-row"><button class="btn btn-pri" onclick="saveDates('${s.id}')">저장</button></div>
+        <h4>일정 / 조건 변경 <span style="color:var(--ink-faint);font-weight:400;font-size:11px">(휠을 위아래로 드래그)</span></h4>
+        <div class="row3">
+          <div class="field"><label>출고일</label>${wtrigDate(s.id,'release',s.release)}</div>
+          <div class="field"><label>ETD(ATD)</label>${wtrigDate(s.id,'etd',s.etd)}</div>
+          <div class="field"><label>선적일 (ETA)</label>${wtrigDate(s.id,'eta',s.eta)}</div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>인코텀즈</label>${wtrigList(s.id,'inco',s.inco,['FOB','CIF','EXW','DAP','DDP','CFR','FCA','CPT'])}</div>
+          <div class="field"><label>수금기간 (일)</label>${wtrigList(s.id,'terms',s.terms||0,[0,7,15,30,45,60,75,90,120,150,180],v=>v+'일')}</div>
+        </div>
+        <div class="field" style="margin-top:6px">
+          <label>협의 진척사항 <span class="neg-saved" data-saved="${s.id}">✓ 저장됨</span></label>
+          <textarea class="neg-area" data-neg="${s.id}" placeholder="바이어 협의, 부킹/통관 진행, 이슈 등 자유롭게 기록 — 자동 저장" oninput="saveNeg('${s.id}')">${s.negotiation||''}</textarea>
+        </div>
       </div>
     </div>
   </div></td></tr>`;}
