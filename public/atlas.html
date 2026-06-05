@@ -527,12 +527,33 @@ function detailRow(s){const m=META[s.status];const isActual=m.stage==='sea'||m.s
 
 function find(id){return state.find(s=>s.id===id);}
 function addComment(id){const inp=document.querySelector(`[data-cmt="${id}"]`);const t=inp.value.trim();if(!t)return;find(id).comments.push({who:me,text:t,at:now()});saveAll();render();}
-function saveDates(id){const s=find(id);const etd=document.querySelector(`[data-etd="${id}"]`).value,eta=document.querySelector(`[data-eta="${id}"]`).value,inco=document.querySelector(`[data-inco="${id}"]`).value,terms=Number(document.querySelector(`[data-terms="${id}"]`).value)||0,reason=document.querySelector(`[data-reason="${id}"]`).value.trim();
-  if(etd!==s.etd){s.history.push({who:me,text:'출고일 변경',amt:fmtD(s.etd)+' → '+fmtD(etd),reason:reason||undefined,at:now()});s.prevEtd=s.etd;s.etd=etd;}
-  if(eta!==s.eta){s.history.push({who:me,text:'선적일 변경',amt:fmtD(s.eta)+' → '+fmtD(eta),at:now()});s.eta=eta;}
-  if(inco!==s.inco){s.history.push({who:me,text:'인코텀즈 변경',amt:s.inco+' → '+inco,at:now()});s.inco=inco;}
-  if(terms!==s.terms){s.history.push({who:me,text:'수금기간 변경',amt:(s.terms||0)+'일 → '+terms+'일',at:now()});s.terms=terms;}
+
+function wtrigDate(id,key,val){
+  const txt=val?val.slice(0,4)+'.'+val.slice(5,7)+'.'+val.slice(8,10):'';
+  return `<button type="button" class="wtrig ${val?'':'empty'}" onclick="pickDate('${id}','${key}')">${txt||'날짜 선택'}<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2"/></svg></button>`;
+}
+function wtrigList(id,key,val,items,fmt){
+  const f=fmt||(v=>String(v));
+  const items_js=items.join(',');
+  return `<button type="button" class="wtrig ${val!==undefined&&val!==null&&val!==''?'':'empty'}" onclick='pickList("${id}","${key}",[${items.map(i=>typeof i==='number'?i:`"${i}"`).join(',')}],${fmt?'true':'false'})'>${val!==undefined&&val!==''?f(val):'선택'}<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2"/></svg></button>`;
+}
+function pickDate(id,key){const s=find(id);openDateWheel(({release:'출고일',etd:'ETD(ATD)',eta:'선적일 (ETA)'})[key],s[key],v=>updateField(id,key,v));}
+function pickList(id,key,items,withDays){
+  const s=find(id);const fmt=withDays?(v=>v+'일'):(v=>v);
+  openListWheel(key==='inco'?'인코텀즈':'수금기간',items,s[key],v=>updateField(id,key,v),fmt);
+}
+function updateField(id,key,val){const s=find(id);const old=s[key];if(String(old==null?'':old)===String(val==null?'':val))return;
+  const labels={release:'출고일',etd:'ETD(ATD)',eta:'선적일',inco:'인코텀즈',terms:'수금기간'};
+  let disp;
+  if(key==='terms')disp=(old||0)+'일 → '+(val||0)+'일';
+  else if(key==='inco')disp=(old||'-')+' → '+(val||'-');
+  else disp=(old?fmtD(old):'—')+' → '+(val?fmtD(val):'—');
+  if(key==='etd'&&old)s.prevEtd=old;
+  s[key]=val;
+  s.history.push({who:me,text:labels[key]+' 변경',amt:disp,at:now()});
   saveAll();render();}
+let negTimers={};
+function saveNeg(id){const ta=document.querySelector(`[data-neg="${id}"]`);const s=find(id);s.negotiation=ta.value;clearTimeout(negTimers[id]);negTimers[id]=setTimeout(()=>{saveAll();const tag=document.querySelector(`[data-saved="${id}"]`);if(tag){tag.classList.add('on');setTimeout(()=>tag.classList.remove('on'),1200);}},350);}
 
 let shipPendingId=null;
 function openShipModal(id){shipPendingId=id;const s=find(id);
