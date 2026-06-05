@@ -347,8 +347,18 @@ input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,1
       <div class="hint">선적일 환율로 원화 매출액이 확정됩니다.</div>
     </div>
     <div class="modal-foot"><button class="btn btn-soft" onclick="closeShip()">취소</button><button class="btn btn-pri" id="sf_save">확정</button></div>
+
+</div>
+
+<div class="wheel-overlay" id="wheelOv">
+  <div class="wheel-modal">
+    <div class="wheel-head"><span id="wheelTitle"></span><small>위·아래로 드래그</small></div>
+    <div class="wheel-cols" id="wheelCols"></div>
+    <div class="wheel-foot"><button class="btn btn-soft" onclick="closeWheel()">취소</button><button class="btn btn-pri" id="wheelOk">확인</button></div>
   </div>
 </div>
+
+
 
 <script>
 const STATUSES=['출고 준비중','출고 완료','선적 완료','수금 완료'];
