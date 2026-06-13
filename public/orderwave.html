@@ -1561,27 +1561,96 @@ let publicAllowlist=null;
 let saveChain=Promise.resolve(),ignoreRemoteUntil=0,hasLocalSave=false,erpSaveTimers={};
 let revSel=null,planMonth=today.getMonth(),estMonth=today.getMonth(),rateMonth=today.getMonth(),revDetails=false,revRateOpen=false;
 let expAttr=new Set();
-let revSort={key:'owner',dir:'asc'};
-function setRevSort(key,dir){revSort.key=key;if(dir)revSort.dir=dir;renderRevenue();}
-function toggleRevSortDir(){revSort.dir=revSort.dir==='asc'?'desc':'asc';renderRevenue();}
-function sortBarHtml(){
-  const k=revSort.key,d=revSort.dir;
-  return `<div class="rev-sortbar">정렬:
-    <button class="rs-btn ${k==='owner'?'on':''}" onclick="setRevSort('owner')">담당자</button>
-    <button class="rs-btn ${k==='country'?'on':''}" onclick="setRevSort('country')">국가</button>
-    <button class="rs-btn rs-dir" onclick="toggleRevSortDir()" title="정렬 방향">${d==='asc'?'▲ 오름':'▼ 내림'}</button>
+/* ===== Unified sort / filter / group system (rev, board, ar) ===== */
+const SORT_FIELDS={
+  rev:[
+    {key:'month',label:'월',get:r=>r.mi,fmt:v=>(v+1)+'월'},
+    {key:'owner',label:'담당자',get:r=>r.owner||''},
+    {key:'country',label:'국가',get:r=>(r.s||r.p||{}).country||''},
+    {key:'client',label:'거래처',get:r=>(r.s||r.p||{}).client||''},
+    {key:'cat1',label:'구분1',get:r=>(r.s||r.p||{}).cat1||''},
+    {key:'cat2',label:'구분2',get:r=>(r.s||r.p||{}).cat2||''},
+    {key:'product',label:'제품',get:r=>(r.s&&r.s.item)||(r.p&&r.p.product)||''},
+    {key:'status',label:'상태',get:r=>(r.s&&r.s.status)||'(계획)'}
+  ],
+  board:[
+    {key:'status',label:'상태',get:s=>s.status||''},
+    {key:'month',label:'출항월',get:s=>{const m=shipmentMonth(s);return m>=0?m:-1;},fmt:v=>v>=0?(v+1)+'월':'미정'},
+    {key:'owner',label:'담당자',get:s=>s.owner||''},
+    {key:'country',label:'국가',get:s=>s.country||''},
+    {key:'client',label:'거래처',get:s=>s.client||''},
+    {key:'cat1',label:'구분1',get:s=>s.cat1||''},
+    {key:'cat2',label:'구분2',get:s=>s.cat2||''},
+    {key:'product',label:'제품',get:s=>s.item||''},
+    {key:'dealType',label:'거래유형',get:s=>s.dealType||''}
+  ],
+  ar:[
+    {key:'dueMonth',label:'마감월',get:s=>{const d=dueDate(s);return d?parseInt(d.slice(5,7)):0;},fmt:v=>v?v+'월':'미정'},
+    {key:'team',label:'팀',get:s=>teamOf(s.owner)||''},
+    {key:'owner',label:'담당자',get:s=>s.owner||''},
+    {key:'country',label:'국가',get:s=>s.country||''},
+    {key:'client',label:'거래처',get:s=>s.client||''},
+    {key:'cat1',label:'구분1',get:s=>s.cat1||''},
+    {key:'cat2',label:'구분2',get:s=>s.cat2||''},
+    {key:'product',label:'제품',get:s=>s.item||''}
+  ]
+};
+let sortState={
+  rev:{key:'month',dir:'asc',pick:null,group:true},
+  board:{key:'status',dir:'asc',pick:null,group:true},
+  ar:{key:'dueMonth',dir:'asc',pick:null,group:true}
+};
+function sortFieldDef(view,key){return SORT_FIELDS[view].find(f=>f.key===key)||SORT_FIELDS[view][0];}
+function sortRerender(view){if(view==='rev')renderRevenue();else if(view==='board'){renderMetrics&&renderMetrics();renderBoard&&renderBoard();}else if(view==='ar')renderAR&&renderAR();}
+function sortKeyChange(view,key){sortState[view].key=key;sortState[view].pick=null;sortRerender(view);}
+function sortDirToggle(view){const s=sortState[view];s.dir=s.dir==='asc'?'desc':'asc';sortRerender(view);}
+function sortGroupToggle(view){sortState[view].group=!sortState[view].group;sortRerender(view);}
+function sortPickToggle(view,val){const s=sortState[view];if(!s.pick)s.pick=new Set();if(/^-?\d+$/.test(val))val=parseInt(val);if(s.pick.has(val))s.pick.delete(val);else s.pick.add(val);if(!s.pick.size)s.pick=null;sortRerender(view);}
+function sortPickClear(view){sortState[view].pick=null;sortRerender(view);}
+function sortLabelOf(view,val){const f=sortFieldDef(view,sortState[view].key);return f.fmt?f.fmt(val):(val||'(미지정)');}
+function uniqueValues(view,items){const f=sortFieldDef(view,sortState[view].key);const m=new Map();items.forEach(it=>{const v=f.get(it);if(!m.has(v))m.set(v,sortLabelOf(view,v));});return Array.from(m,([v,lab])=>({v,lab})).sort((a,b)=>(''+a.lab).localeCompare(''+b.lab,'ko'));}
+function applyUnifiedSort(view,items){const s=sortState[view],f=sortFieldDef(view,s.key),dir=s.dir==='asc'?1:-1;let out=items.slice();if(s.pick&&s.pick.size)out=out.filter(it=>s.pick.has(f.get(it)));out.sort((a,b)=>{const va=f.get(a),vb=f.get(b);if(typeof va==='number'&&typeof vb==='number')return (va-vb)*dir;return (''+va).localeCompare(''+vb,'ko')*dir;});return out;}
+function groupBySorted(view,items){const f=sortFieldDef(view,sortState[view].key);const map=new Map();items.forEach(it=>{const v=f.get(it);if(!map.has(v))map.set(v,{label:sortLabelOf(view,v),items:[]});map.get(v).items.push(it);});return Array.from(map,([k,g])=>({k,label:g.label,items:g.items}));}
+function escJs(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
+function unifiedSortBarHtml(view,items){
+  const s=sortState[view],fields=SORT_FIELDS[view];
+  const uniq=uniqueValues(view,items);
+  const pickN=s.pick?s.pick.size:0;
+  const pickLab=pickN?`표시 ${pickN}/${uniq.length}`:`전체 ${uniq.length}`;
+  return `<div class="rev-sortbar">
+    <span class="rs-label">정렬</span>
+    <select class="rs-sel" onchange="sortKeyChange('${view}',this.value)">${fields.map(f=>`<option value="${f.key}" ${s.key===f.key?'selected':''}>${f.label}</option>`).join('')}</select>
+    <button class="rs-btn rs-dir" onclick="sortDirToggle('${view}')" title="정렬 방향">${s.dir==='asc'?'▲ 오름':'▼ 내림'}</button>
+    <details class="rs-filter">
+      <summary class="rs-btn ${pickN?'on':''}" title="${sortFieldDef(view,s.key).label} 필터">${pickLab} ▾</summary>
+      <div class="rs-pop">
+        <div class="rs-pop-head">
+          <span class="rs-pop-note"><b>${sortFieldDef(view,s.key).label}</b> 필터</span>
+          ${pickN?`<button class="rs-mini" onclick="sortPickClear('${view}')">초기화</button>`:''}
+        </div>
+        <div class="rs-pop-list">${uniq.map(u=>`<label class="rs-pop-item"><input type="checkbox" ${s.pick&&s.pick.has(u.v)?'checked':''} onchange="sortPickToggle('${view}','${escJs(u.v)}')"><span>${u.lab}</span></label>`).join('')||'<div class="rs-pop-empty">표시할 항목이 없습니다</div>'}</div>
+      </div>
+    </details>
+    <button class="rs-btn ${s.group?'on':''}" onclick="sortGroupToggle('${view}')" title="${sortFieldDef(view,s.key).label}별로 그룹/접기">${s.group?'그룹 ON':'그룹 OFF'}</button>
   </div>`;
 }
-function sortTeamRows(rows){
-  const k=revSort.key,dir=revSort.dir==='asc'?1:-1;
-  const get=r=>k==='owner'?(r.owner||''):((r.p&&r.p.country)||(r.s&&r.s.country)||'');
-  rows.sort((a,b)=>{
-    if(a.mi!==b.mi)return a.mi-b.mi;
-    const va=get(a),vb=get(b);
-    return va.localeCompare(vb,'ko')*dir;
-  });
-  return rows;
+function renderGroupSections(view,items,renderItemsFn,countFmt){
+  if(!items.length)return '';
+  const s=sortState[view];
+  if(!s.group)return renderItemsFn(items);
+  const groups=groupBySorted(view,items);
+  return groups.map((g,i)=>`<details class="status-collapse sect-group" open>
+    <summary><span class="sc-label">${g.label}</span><span class="sc-count">${countFmt?countFmt(g.items):g.items.length+'건'}</span><span class="sc-caret">▾</span></summary>
+    <div class="sg-body">${renderItemsFn(g.items)}</div>
+  </details>`).join('');
 }
+/* legacy aliases for revenue */
+function setRevSort(key,dir){sortState.rev.key=key;if(dir)sortState.rev.dir=dir;renderRevenue();}
+function toggleRevSortDir(){sortDirToggle('rev');}
+function sortBarHtml(){return unifiedSortBarHtml('rev',revUnifiedItems());}
+function sortTeamRows(rows){return applyUnifiedSort('rev',rows);}
+let _revLastItems=[];
+function revUnifiedItems(){return _revLastItems;}
 function attrKeyP(p){return [p.country||'',p.client||'',p.cat1||'',p.cat2||'',p.product||''].join('§');}
 function attrKeyE(s){return [s.country||'',s.client||'',s.cat1||'',s.cat2||'',s.item||''].join('§');}
 function groupByFn(arr,fn){const m=new Map();arr.forEach((it,i)=>{const k=fn(it,i);if(!m.has(k))m.set(k,[]);m.get(k).push({it,i});});return m;}
