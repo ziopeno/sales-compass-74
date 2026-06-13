@@ -421,6 +421,11 @@ input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,1
 .status-collapse .sc-caret{margin-left:auto;color:var(--ink-faint);font-size:13px;transition:.18s}
 .status-collapse[open]>summary .sc-caret{transform:rotate(180deg)}
 .status-collapse .status-list{padding:12px}
+details.sect-collapse>summary{list-style:none;cursor:pointer}
+details.sect-collapse>summary::-webkit-details-marker{display:none}
+details.sect-collapse>summary .sc-caret{margin-left:auto;color:var(--ink-faint);font-size:14px;transition:transform .18s}
+details.sect-collapse[open]>summary .sc-caret{transform:rotate(180deg)}
+details.sect-collapse>summary.panel-head{display:flex;align-items:center;gap:10px}
 .status-item{border:1px solid var(--line-soft);background:#fff;border-radius:12px;padding:12px;min-width:0}
 .status-item-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}
 .status-item-name{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -3307,13 +3312,14 @@ function renderRevenue(){if(!state||!settings||!users)return;rebuildCatalogs();s
       <div class="tbox">${dd.plan>0?`<span class="tbar plan" style="height:${Math.max(ph,2)}px"></span>`:''}${dd.est>0?`<span class="tbar est ${tier}" style="height:${Math.max(eh,2)}px"></span>`:''}${empty?'<span class="tempty"></span>':''}</div>
       <div class="tnum">${i+1}</div></button>`;
   }).join('');
-  const trendChart=`<div class="panel trend-panel">
-    <div class="panel-head"><h3>월별 추이 <span class="analysis-note">${revYear}년 · 막대 클릭 시 해당 월</span></h3>
+  const trendChart=`<details class="panel trend-panel sect-collapse">
+    <summary class="panel-head"><h3>월별 추이 <span class="analysis-note">${revYear}년 · 막대 클릭 시 해당 월</span></h3>
       <div class="trend-ytd">누적 계획 <b>${won(ytdP)}</b> · 추정 <b style="color:var(--teal)">${won(ytdE)}</b>${ytdPct!=null?` · <b style="color:${ytdPct>=100?'var(--green)':ytdPct>=70?'var(--amber)':'var(--red)'}">${ytdPct}%</b>`:''}</div>
-    </div>
+      <span class="sc-caret">▾</span>
+    </summary>
     <div class="trend-legend"><span><i class="lg-plan"></i>계획</span><span><i class="lg-est"></i>추정(실적)</span></div>
     <div class="trend-bars">${trendBars}</div>
-  </div>`;
+  </details>`;
   const gapChip=`<span class="gap-chip ${gapKrw<0?'neg':''}">${gapKrw>=0?'+':''}${won(gapKrw)}</span>`;
   const gapVal=`${gapKrw>=0?'+':''}${won(gapKrw)}`;
   const gapUsdVal=`${gapUsd>=0?'+':''}${usd(gapUsd)}`;
@@ -3395,13 +3401,15 @@ function renderRevenue(){if(!state||!settings||!users)return;rebuildCatalogs();s
             ${yoyCard}
           </div>
         </div>
-        <div class="status-board-head">
-          <div><div class="status-board-title">${dims.find(d=>d[0]===revDim)[1]}별 달성률</div><div class="analysis-note">트랙=계획(목표) · 채움=추정(실적) · 항목 클릭 → 상세 꺼내보기</div></div>
-          <div class="dim-seg">${dimSeg}</div>
-        </div>
-        <details class="status-collapse"${revDim!=='owner'?' open':''}>
-          <summary><span class="sc-label">${dims.find(d=>d[0]===revDim)[1]}별 상세</span><span class="sc-count">${statusCount||0}개 항목</span><span class="sc-caret">▾</span></summary>
-          <div class="status-list">${statusCards}</div>
+        <details class="status-collapse">
+          <summary><span class="sc-label">구분별 달성률 살펴보기</span><span class="sc-count">${statusCount||0}개 항목</span><span class="sc-caret">▾</span></summary>
+          <div style="padding:12px;display:flex;flex-direction:column;gap:10px">
+            <div class="status-board-head" style="margin:0">
+              <div><div class="analysis-note">트랙=계획(목표) · 채움=추정(실적) · 항목 클릭 → 상세</div></div>
+              <div class="dim-seg">${dimSeg}</div>
+            </div>
+            <div class="status-list">${statusCards}</div>
+          </div>
         </details>
       </div>
       ${revDetails?`<div class="detail-stack">
@@ -3422,15 +3430,15 @@ function renderRevenue(){if(!state||!settings||!users)return;rebuildCatalogs();s
 
     ${trendChart}
 
-    <div class="panel panel-plan">
-      <div class="panel-head"><h3><span class="panel-tag plan"><span class="dot"></span>계획</span><span class="focus-owner">${inputScope}</span> <span class="input-scope-note">(입력된 항목을 바로 수정하거나 새로 추가)</span></h3></div>
+    <details class="panel panel-plan sect-collapse">
+      <summary class="panel-head"><h3><span class="panel-tag plan"><span class="dot"></span>계획</span><span class="focus-owner">${inputScope}</span> <span class="input-scope-note">(입력된 항목을 바로 수정하거나 새로 추가)</span></h3><span class="sc-caret">▾</span></summary>
       ${planUI}
-    </div>
+    </details>
 
-    <div class="panel panel-est">
-      <div class="panel-head"><h3><span class="panel-tag est"><span class="dot"></span>추정(실적)</span><span class="focus-owner">${inputScope}</span> <span class="input-scope-note">(입력된 항목을 바로 수정하거나 새로 추가)</span></h3></div>
+    <details class="panel panel-est sect-collapse">
+      <summary class="panel-head"><h3><span class="panel-tag est"><span class="dot"></span>추정(실적)</span><span class="focus-owner">${inputScope}</span> <span class="input-scope-note">(입력된 항목을 바로 수정하거나 새로 추가)</span></h3><span class="sc-caret">▾</span></summary>
       ${estUI}
-    </div>`;
+    </details>`;
   updateChip();updateRevSelCount();}
 
 function ownerItemPanel(){
