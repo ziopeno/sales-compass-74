@@ -3388,7 +3388,10 @@ function renderRevenue(){if(!state||!settings||!users)return;rebuildCatalogs();s
           <div><div class="status-board-title">${dims.find(d=>d[0]===revDim)[1]}별 달성률</div><div class="analysis-note">트랙=계획(목표) · 채움=추정(실적) · 항목 클릭 → 상세 꺼내보기</div></div>
           <div class="dim-seg">${dimSeg}</div>
         </div>
-        <div class="status-list">${statusCards}</div>
+        <details class="status-collapse"${revDim!=='owner'?' open':''}>
+          <summary><span class="sc-label">${dims.find(d=>d[0]===revDim)[1]}별 상세</span><span class="sc-count">${statusCount||0}개 항목</span><span class="sc-caret">▾</span></summary>
+          <div class="status-list">${statusCards}</div>
+        </details>
       </div>
       ${revDetails?`<div class="detail-stack">
         <div class="analysis-section">
