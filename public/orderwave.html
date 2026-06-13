@@ -3586,7 +3586,7 @@ function teamEstMonthBlock(owners,mi){
   const groups=owners.map(o=>{
     const entries=state.filter(s=>s.owner===o&&shipmentMonth(s)===mi);
     if(!entries.length)return '';
-    return `<div class="team-owner-group"><div class="team-owner-group-head">${avatar(o)}<span>${o}</span><small style="color:var(--ink-faint);font-weight:500">${teamOf(o)} · ${entries.length}건</small></div>${entries.map(s=>estCard(s)).join('')}</div>`;
+    return `<div class="team-owner-group"><div class="team-owner-group-head">${avatar(o)}<span>${o}</span><small style="color:var(--ink-faint);font-weight:500">${teamOf(o)} · ${entries.length}건</small></div>${renderEstGroups(entries)}</div>`;
   }).filter(Boolean).join('');
   const total=owners.reduce((a,o)=>a+state.filter(s=>s.owner===o&&shipmentMonth(s)===mi).reduce((s,x)=>s+usdOf(x),0),0);
   const cnt=owners.reduce((a,o)=>a+state.filter(s=>s.owner===o&&shipmentMonth(s)===mi).length,0);
