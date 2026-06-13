@@ -3278,6 +3278,7 @@ function renderRevenue(){if(!state||!settings||!users)return;rebuildCatalogs();s
     return `<tr><td>${k}</td><td>${planCell}</td><td style="color:var(--teal)">${won(g.estKrw)}<span class="usd">${usd(g.estUsd)}</span></td><td>${achCell}</td></tr>`;
   }).join(''):`<tr><td colspan="4" style="text-align:center;color:var(--ink-faint);padding:18px">데이터 없음</td></tr>`;
   const estPct=hasPlan?Math.round(tot.est/tot.plan*100):0;
+  const statusCount=brk.length;
   const statusCards=brk.length?brk.slice(0,12).map(([k,g],i)=>`<div class="bullet-click" onclick="openRevDrill('${revDim}','${encodeURIComponent(k)}')" title="클릭하면 ${escAttr(k)} 상세를 꺼내봅니다">${revBulletItem(k,g.planKrw,g.estKrw,i,g.lyKrw||0)}</div>`).join('')
     :`<div class="status-empty">선택 기간에 입력된 계획 또는 추정(실적)이 없습니다.</div>`;
   const teamGauge=revGaugeHtml(estPct,tot,hasPlan,fx);
