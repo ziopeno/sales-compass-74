@@ -1532,6 +1532,27 @@ let publicAllowlist=null;
 let saveChain=Promise.resolve(),ignoreRemoteUntil=0,hasLocalSave=false,erpSaveTimers={};
 let revSel=null,planMonth=today.getMonth(),estMonth=today.getMonth(),rateMonth=today.getMonth(),revDetails=false,revRateOpen=false;
 let expAttr=new Set();
+let revSort={key:'owner',dir:'asc'};
+function setRevSort(key,dir){revSort.key=key;if(dir)revSort.dir=dir;renderRevenue();}
+function toggleRevSortDir(){revSort.dir=revSort.dir==='asc'?'desc':'asc';renderRevenue();}
+function sortBarHtml(){
+  const k=revSort.key,d=revSort.dir;
+  return `<div class="rev-sortbar">정렬:
+    <button class="rs-btn ${k==='owner'?'on':''}" onclick="setRevSort('owner')">담당자</button>
+    <button class="rs-btn ${k==='country'?'on':''}" onclick="setRevSort('country')">국가</button>
+    <button class="rs-btn rs-dir" onclick="toggleRevSortDir()" title="정렬 방향">${d==='asc'?'▲ 오름':'▼ 내림'}</button>
+  </div>`;
+}
+function sortTeamRows(rows){
+  const k=revSort.key,dir=revSort.dir==='asc'?1:-1;
+  const get=r=>k==='owner'?(r.owner||''):((r.p&&r.p.country)||(r.s&&r.s.country)||'');
+  rows.sort((a,b)=>{
+    if(a.mi!==b.mi)return a.mi-b.mi;
+    const va=get(a),vb=get(b);
+    return va.localeCompare(vb,'ko')*dir;
+  });
+  return rows;
+}
 function attrKeyP(p){return [p.country||'',p.client||'',p.cat1||'',p.cat2||'',p.product||''].join('§');}
 function attrKeyE(s){return [s.country||'',s.client||'',s.cat1||'',s.cat2||'',s.item||''].join('§');}
 function groupByFn(arr,fn){const m=new Map();arr.forEach((it,i)=>{const k=fn(it,i);if(!m.has(k))m.set(k,[]);m.get(k).push({it,i});});return m;}
