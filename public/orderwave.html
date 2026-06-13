@@ -3307,13 +3307,14 @@ function renderRevenue(){if(!state||!settings||!users)return;rebuildCatalogs();s
       <div class="tbox">${dd.plan>0?`<span class="tbar plan" style="height:${Math.max(ph,2)}px"></span>`:''}${dd.est>0?`<span class="tbar est ${tier}" style="height:${Math.max(eh,2)}px"></span>`:''}${empty?'<span class="tempty"></span>':''}</div>
       <div class="tnum">${i+1}</div></button>`;
   }).join('');
-  const trendChart=`<div class="panel trend-panel">
-    <div class="panel-head"><h3>월별 추이 <span class="analysis-note">${revYear}년 · 막대 클릭 시 해당 월</span></h3>
+  const trendChart=`<details class="panel trend-panel sect-collapse">
+    <summary class="panel-head"><h3>월별 추이 <span class="analysis-note">${revYear}년 · 막대 클릭 시 해당 월</span></h3>
       <div class="trend-ytd">누적 계획 <b>${won(ytdP)}</b> · 추정 <b style="color:var(--teal)">${won(ytdE)}</b>${ytdPct!=null?` · <b style="color:${ytdPct>=100?'var(--green)':ytdPct>=70?'var(--amber)':'var(--red)'}">${ytdPct}%</b>`:''}</div>
-    </div>
+      <span class="sc-caret">▾</span>
+    </summary>
     <div class="trend-legend"><span><i class="lg-plan"></i>계획</span><span><i class="lg-est"></i>추정(실적)</span></div>
     <div class="trend-bars">${trendBars}</div>
-  </div>`;
+  </details>`;
   const gapChip=`<span class="gap-chip ${gapKrw<0?'neg':''}">${gapKrw>=0?'+':''}${won(gapKrw)}</span>`;
   const gapVal=`${gapKrw>=0?'+':''}${won(gapKrw)}`;
   const gapUsdVal=`${gapUsd>=0?'+':''}${usd(gapUsd)}`;
