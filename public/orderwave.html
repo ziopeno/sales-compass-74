@@ -3703,80 +3703,60 @@ function planMonthBlock(owner,mi){
 }
 function renderPlanGroups(owner,mi,arr){
   if(!arr.length)return '';
-  const key=revYear+'-'+(mi+1);
-  const groups=groupByFn(arr,p=>attrKeyP(p));
-  let html='';
-  groups.forEach((items,gk)=>{
-    const first=items[0].it;
-    const gid='pg|'+owner+'|'+mi+'|'+gk;
+  const rows=arr.map((p,idx)=>{
+    const isCost=p.product==='테라도 비용정산';
+    const u=planEntryUsd(p),k=planEntryKrw(p,mi);
+    const gid='pe|'+owner+'|'+mi+'|'+idx;
     const open=expAttr.has(gid);
-    const parts=[first.country,first.client,first.cat1,first.cat2,first.product];
-    const sumUsd=items.reduce((a,x)=>a+planEntryUsd(x.it),0);
-    const rows=items.map(({it:p,i:idx})=>{
-      const isCost=p.product==='테라도 비용정산';
-      const u=planEntryUsd(p),k=planEntryKrw(p,mi);
-      return `<div class="ag-row">
-        <label class="ag-sel"><input type="checkbox" data-plan-sel="${owner}|${mi}|${idx}" ${isAdmin()?'':'disabled'} onchange="onRevSelToggle()"></label>
-        ${isCost
-          ? `<span class="ag-cell muted" style="grid-column:span 2">USD 직접</span><input class="ag-in" ${numInputAttrs()} placeholder="USD" value="${p.directUsd||''}" oninput="updatePlan('${owner}',${mi},${idx},'directUsd',this.value)">`
-          : `<input class="ag-in" ${numInputAttrs()} placeholder="물량" value="${p.qty||''}" oninput="updatePlan('${owner}',${mi},${idx},'qty',this.value)"><input class="ag-in" ${numInputAttrs()} placeholder="단가" value="${p.price||''}" oninput="updatePlan('${owner}',${mi},${idx},'price',this.value)"><span class="ag-cell">${usd(u)}</span>`}
-        <span class="ag-cell">${won(k)}</span>
-        <button class="pc-del" onclick="removePlanRow('${owner}',${mi},${idx})" title="삭제">×</button>
-      </div>`;
-    }).join('');
-    const editors=open?`<div class="ag-edit">${items.map(({it,i:idx})=>planCard(owner,mi,idx,it)).join('')}</div>`:'';
-    html+=`<div class="attr-group">
-      <div class="ag-head">
-        <div class="ag-chips">${attrChips(parts)}</div>
-        <span class="ag-meta">${items.length}건 · ${usd(sumUsd)}</span>
-        <button class="ag-edit-btn ${open?'on':''}" onclick="toggleAttrGroup('${gid}')" title="항목 정보 편집">${open?'접기':'✎ 편집'}</button>
-      </div>
-      <div class="ag-table ${open?'hide':''}">
-        <div class="ag-row ag-thead"><span></span><span>물량</span><span>단가</span><span>USD</span><span>원화</span><span></span></div>
-        ${rows}
-      </div>
-      ${editors}
-    </div>`;
-  });
-  return html;
+    const editor=open?`<div class="ag-edit-row">${planCard(owner,mi,idx,p)}</div>`:'';
+    return `<div class="ag-row" data-row>
+      <label class="ag-sel"><input type="checkbox" data-plan-sel="${owner}|${mi}|${idx}" ${isAdmin()?'':'disabled'} onchange="onRevSelToggle()"></label>
+      <span class="ag-cell ellip" title="${escAttr(p.country||'')}">${p.country||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(p.client||'')}">${p.client||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(p.cat1||'')}">${p.cat1||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(p.cat2||'')}">${p.cat2||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(p.product||'')}">${p.product||'—'}</span>
+      ${isCost
+        ? `<span class="ag-cell muted">—</span><span class="ag-cell muted">USD직접</span><input class="ag-in" ${numInputAttrs()} placeholder="USD" value="${p.directUsd||''}" oninput="updatePlan('${owner}',${mi},${idx},'directUsd',this.value)">`
+        : `<input class="ag-in" ${numInputAttrs()} placeholder="0" value="${p.qty||''}" oninput="updatePlan('${owner}',${mi},${idx},'qty',this.value)"><input class="ag-in" ${numInputAttrs()} placeholder="0" value="${p.price||''}" oninput="updatePlan('${owner}',${mi},${idx},'price',this.value)"><span class="ag-cell num">${usd(u)}</span>`}
+      <span class="ag-cell num">${won(k)}</span>
+      <button class="ag-edit-btn ${open?'on':''}" onclick="toggleAttrGroup('${gid}')" title="속성 편집">${open?'접기':'✎'}</button>
+      <button class="pc-del" onclick="removePlanRow('${owner}',${mi},${idx})" title="삭제">×</button>
+    </div>${editor}`;
+  }).join('');
+  return `<div class="attr-table plan-attr-table">
+    <div class="ag-row ag-thead"><span></span><span>국가</span><span>거래처</span><span>구분1</span><span>구분2</span><span>제품</span><span>물량</span><span>단가</span><span>USD</span><span>원화</span><span></span><span></span></div>
+    ${rows}
+  </div>`;
 }
 function renderEstGroups(entries){
   if(!entries.length)return '';
-  const groups=groupByFn(entries,s=>attrKeyE(s));
-  let html='';
-  groups.forEach((items,gk)=>{
-    const first=items[0].it;
-    const gid='eg|'+first.owner+'|'+shipmentMonth(first)+'|'+gk;
+  const rows=entries.map(s=>{
+    const u=usdOf(s),m=META[s.status],mi=shipmentMonth(s);
+    const k=Math.round(u*estRateFor(mi));
+    const gid='ee|'+s.id;
     const open=expAttr.has(gid);
-    const parts=[first.country,first.client,first.cat1,first.cat2,first.item];
-    const sumUsd=items.reduce((a,x)=>a+usdOf(x.it),0);
-    const rows=items.map(({it:s})=>{
-      const u=usdOf(s),m=META[s.status],mi=shipmentMonth(s);
-      const k=Math.round(u*estRateFor(mi));
-      return `<div class="ag-row">
-        <label class="ag-sel"><input type="checkbox" data-est-sel="${s.id}" onchange="onRevSelToggle()"></label>
-        <input class="ag-in" ${numInputAttrs()} placeholder="물량" value="${s.qty||''}" oninput="updateShipField('${s.id}','qty',this.value)">
-        <input class="ag-in" ${numInputAttrs()} placeholder="단가" value="${s.price||''}" oninput="updateShipField('${s.id}','price',this.value)">
-        <span class="ag-cell">${usd(u)}</span>
-        <span class="ag-cell">${won(k)} <span class="badge ${m.cls}" style="margin-left:4px;font-size:10px">${s.status}</span></span>
-        <button class="pc-del" onclick="deleteShipment('${s.id}')" title="삭제">×</button>
-      </div>`;
-    }).join('');
-    const editors=open?`<div class="ag-edit">${items.map(({it})=>estCard(it)).join('')}</div>`:'';
-    html+=`<div class="attr-group">
-      <div class="ag-head">
-        <div class="ag-chips">${attrChips(parts)}</div>
-        <span class="ag-meta">${items.length}건 · ${usd(sumUsd)}</span>
-        <button class="ag-edit-btn ${open?'on':''}" onclick="toggleAttrGroup('${gid}')" title="항목 정보·ERP 편집">${open?'접기':'✎ 편집'}</button>
-      </div>
-      <div class="ag-table ${open?'hide':''}">
-        <div class="ag-row ag-thead"><span></span><span>물량</span><span>단가</span><span>USD</span><span>원화 / 상태</span><span></span></div>
-        ${rows}
-      </div>
-      ${editors}
-    </div>`;
-  });
-  return html;
+    const editor=open?`<div class="ag-edit-row">${estCard(s)}</div>`:'';
+    return `<div class="ag-row" data-row>
+      <label class="ag-sel"><input type="checkbox" data-est-sel="${s.id}" onchange="onRevSelToggle()"></label>
+      <span class="ag-cell ellip" title="${escAttr(s.country||'')}">${s.country||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(s.client||'')}">${s.client||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(s.cat1||'')}">${s.cat1||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(s.cat2||'')}">${s.cat2||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(s.item||'')}">${s.item||'—'}</span>
+      <input class="ag-in" ${numInputAttrs()} placeholder="0" value="${s.qty||''}" oninput="updateShipField('${s.id}','qty',this.value)">
+      <input class="ag-in" ${numInputAttrs()} placeholder="0" value="${s.price||''}" oninput="updateShipField('${s.id}','price',this.value)">
+      <span class="ag-cell num">${usd(u)}</span>
+      <span class="ag-cell num">${won(k)}</span>
+      <span class="ag-cell"><span class="badge ${m.cls}" style="font-size:10px">${s.status}</span></span>
+      <button class="ag-edit-btn ${open?'on':''}" onclick="toggleAttrGroup('${gid}')" title="속성·ERP 편집">${open?'접기':'✎'}</button>
+      <button class="pc-del" onclick="deleteShipment('${s.id}')" title="삭제">×</button>
+    </div>${editor}`;
+  }).join('');
+  return `<div class="attr-table est-attr-table">
+    <div class="ag-row ag-thead"><span></span><span>국가</span><span>거래처</span><span>구분1</span><span>구분2</span><span>제품</span><span>물량</span><span>단가</span><span>USD</span><span>원화</span><span>상태</span><span></span><span></span></div>
+    ${rows}
+  </div>`;
 }
 function planCard(owner,mi,idx,p){
   const isCost=p.product==='테라도 비용정산';
