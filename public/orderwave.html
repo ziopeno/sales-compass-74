@@ -3774,7 +3774,7 @@ function renderTeamPlanTable(rows){
     </div>${editor}`;
   }).join('');
   return `<div class="attr-table plan-team-table">
-    <div class="ag-row ag-thead"><span></span><span>월</span><span>담당자</span><span>국가</span><span>거래처</span><span>구분1</span><span>구분2</span><span>제품</span><span>물량</span><span>단가</span><span>USD</span><span>원화</span><span></span><span></span></div>
+    <div class="ag-row ag-thead"><span></span><span>${thSortHead('rev','month','월')}</span><span>${thSortHead('rev','owner','담당자')}</span><span>${thSortHead('rev','country','국가')}</span><span>${thSortHead('rev','client','거래처')}</span><span>${thSortHead('rev','cat1','구분1')}</span><span>${thSortHead('rev','cat2','구분2')}</span><span>${thSortHead('rev','product','제품')}</span><span>물량</span><span>단가</span><span>USD</span><span>원화</span><span></span><span></span></div>
     ${body}
   </div>`;
 }
