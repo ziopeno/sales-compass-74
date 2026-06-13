@@ -3722,7 +3722,7 @@ function teamPlanEditor(owners,months=inputMonths()){
   const body=renderGroupSections('rev',rows,items=>renderTeamPlanTable(items),items=>items.length+'건 · '+usd(items.reduce((a,r)=>a+planEntryUsd(r.p),0)));
   return editPeriodNote(months)+`<div class="team-entry">
     <div class="team-entry-head"><b>담당자별 계획 거래</b><span class="team-help">선택 기간 전체 ${rows.length}건 · 합계 ${usd(total)}</span></div>
-    ${unifiedSortBarHtml('rev',raw)}
+    <div class="team-help" style="font-size:11px;color:var(--ink-faint);padding:4px 2px">표 헤더의 <b>월/담당자/국가</b> 등을 누르면 정렬·필터를 지정할 수 있어요.</div>
     ${body||`<div style="color:var(--ink-faint);text-align:center;padding:18px;font-size:12.5px">선택 기간에 계획 거래가 없습니다</div>`}
   </div>`;
 }
