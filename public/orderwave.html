@@ -3866,7 +3866,7 @@ function estEditor(owner,hideMonth=false,months=null){
 }
 function estMonthBlock(owner,mi){
   const entries=state.filter(s=>s.owner===owner&&shipmentMonth(s)===mi);
-  const cards=entries.map(s=>estCard(s)).join('');
+  const cards=renderEstGroups(entries);
   const total=entries.reduce((a,s)=>a+usdOf(s),0);
   return `<div class="month-block">
       <div class="mb-head"><b><span class="focus-owner">${owner}</span> · ${revYear}년 ${mi+1}월${entries.length?' · '+entries.length+'건':''}</b>
