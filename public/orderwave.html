@@ -3671,7 +3671,7 @@ function planEditor(owner,hideMonth=false,months=null){
 function planMonthBlock(owner,mi){
   const key=revYear+'-'+(mi+1);
   const arr=(settings.planByOwner[owner]&&settings.planByOwner[owner][key])||[];
-  const cards=arr.map((p,i)=>planCard(owner,mi,i,p)).join('');
+  const cards=renderPlanGroups(owner,mi,arr);
   const total=arr.reduce((a,p)=>a+(planEntryUsd(p)),0);
   return `<div class="month-block">
       <div class="mb-head"><b><span class="focus-owner">${owner}</span> · ${revYear}년 ${mi+1}월${arr.length?' · '+arr.length+'건':''}</b>
