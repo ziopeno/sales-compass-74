@@ -3661,13 +3661,15 @@ function renderTeamPlanTable(rows){
 }
 function renderTeamEstTable(rows){
   if(!rows.length)return `<div style="color:var(--ink-faint);text-align:center;padding:18px;font-size:12.5px">선택 기간에 추정(실적) 거래가 없습니다</div>`;
+  let prevMi=null;
   const body=rows.map(({owner,mi,s})=>{
     const u=usdOf(s),m=META[s.status];
     const k=Math.round(u*estRateFor(mi));
     const gid='ee|'+s.id;
     const open=expAttr.has(gid);
     const editor=open?`<div class="ag-edit-row">${estCard(s)}</div>`:'';
-    return `<div class="ag-row" data-row>
+    const isStart=mi!==prevMi;prevMi=mi;
+    return `<div class="ag-row ${isStart?'mon-start':''}" data-row>
       <label class="ag-sel"><input type="checkbox" data-est-sel="${s.id}" onchange="onRevSelToggle()"></label>
       <span class="ag-cell mon">${mi+1}월</span>
       <span class="ag-cell ellip" title="${escAttr(owner)}">${owner}</span>
