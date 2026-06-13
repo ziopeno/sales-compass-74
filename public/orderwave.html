@@ -3566,7 +3566,7 @@ function teamPlanMonthBlock(owners,mi){
   const groups=owners.map(o=>{
     const arr=(settings.planByOwner[o]&&settings.planByOwner[o][revYear+'-'+(mi+1)])||[];
     if(!arr.length)return '';
-    return `<div class="team-owner-group"><div class="team-owner-group-head">${avatar(o)}<span>${o}</span><small style="color:var(--ink-faint);font-weight:500">${teamOf(o)} · ${arr.length}건</small></div>${arr.map((p,i)=>planCard(o,mi,i,p)).join('')}</div>`;
+    return `<div class="team-owner-group"><div class="team-owner-group-head">${avatar(o)}<span>${o}</span><small style="color:var(--ink-faint);font-weight:500">${teamOf(o)} · ${arr.length}건</small></div>${renderPlanGroups(o,mi,arr)}</div>`;
   }).filter(Boolean).join('');
   const total=owners.reduce((a,o)=>{
     const arr=(settings.planByOwner[o]&&settings.planByOwner[o][revYear+'-'+(mi+1)])||[];
