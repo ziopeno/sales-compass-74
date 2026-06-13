@@ -3682,6 +3682,83 @@ function planMonthBlock(owner,mi){
       ${cards||`<div style="color:var(--ink-faint);text-align:center;padding:18px;font-size:12.5px">계획 항목이 없습니다</div>`}
     </div>`;
 }
+function renderPlanGroups(owner,mi,arr){
+  if(!arr.length)return '';
+  const key=revYear+'-'+(mi+1);
+  const groups=groupByFn(arr,p=>attrKeyP(p));
+  let html='';
+  groups.forEach((items,gk)=>{
+    const first=items[0].it;
+    const gid='pg|'+owner+'|'+mi+'|'+gk;
+    const open=expAttr.has(gid);
+    const parts=[first.country,first.client,first.cat1,first.cat2,first.product];
+    const sumUsd=items.reduce((a,x)=>a+planEntryUsd(x.it),0);
+    const rows=items.map(({it:p,i:idx})=>{
+      const isCost=p.product==='테라도 비용정산';
+      const u=planEntryUsd(p),k=planEntryKrw(p,mi);
+      return `<div class="ag-row">
+        <label class="ag-sel"><input type="checkbox" data-plan-sel="${owner}|${mi}|${idx}" ${isAdmin()?'':'disabled'} onchange="onRevSelToggle()"></label>
+        ${isCost
+          ? `<span class="ag-cell muted" style="grid-column:span 2">USD 직접</span><input class="ag-in" ${numInputAttrs()} placeholder="USD" value="${p.directUsd||''}" oninput="updatePlan('${owner}',${mi},${idx},'directUsd',this.value)">`
+          : `<input class="ag-in" ${numInputAttrs()} placeholder="물량" value="${p.qty||''}" oninput="updatePlan('${owner}',${mi},${idx},'qty',this.value)"><input class="ag-in" ${numInputAttrs()} placeholder="단가" value="${p.price||''}" oninput="updatePlan('${owner}',${mi},${idx},'price',this.value)"><span class="ag-cell">${usd(u)}</span>`}
+        <span class="ag-cell">${won(k)}</span>
+        <button class="pc-del" onclick="removePlanRow('${owner}',${mi},${idx})" title="삭제">×</button>
+      </div>`;
+    }).join('');
+    const editors=open?`<div class="ag-edit">${items.map(({it,i:idx})=>planCard(owner,mi,idx,it)).join('')}</div>`:'';
+    html+=`<div class="attr-group">
+      <div class="ag-head">
+        <div class="ag-chips">${attrChips(parts)}</div>
+        <span class="ag-meta">${items.length}건 · ${usd(sumUsd)}</span>
+        <button class="ag-edit-btn ${open?'on':''}" onclick="toggleAttrGroup('${gid}')" title="항목 정보 편집">${open?'접기':'✎ 편집'}</button>
+      </div>
+      <div class="ag-table ${open?'hide':''}">
+        <div class="ag-row ag-thead"><span></span><span>물량</span><span>단가</span><span>USD</span><span>원화</span><span></span></div>
+        ${rows}
+      </div>
+      ${editors}
+    </div>`;
+  });
+  return html;
+}
+function renderEstGroups(entries){
+  if(!entries.length)return '';
+  const groups=groupByFn(entries,s=>attrKeyE(s));
+  let html='';
+  groups.forEach((items,gk)=>{
+    const first=items[0].it;
+    const gid='eg|'+first.owner+'|'+shipmentMonth(first)+'|'+gk;
+    const open=expAttr.has(gid);
+    const parts=[first.country,first.client,first.cat1,first.cat2,first.item];
+    const sumUsd=items.reduce((a,x)=>a+usdOf(x.it),0);
+    const rows=items.map(({it:s})=>{
+      const u=usdOf(s),m=META[s.status],mi=shipmentMonth(s);
+      const k=Math.round(u*estRateFor(mi));
+      return `<div class="ag-row">
+        <label class="ag-sel"><input type="checkbox" data-est-sel="${s.id}" onchange="onRevSelToggle()"></label>
+        <input class="ag-in" ${numInputAttrs()} placeholder="물량" value="${s.qty||''}" oninput="updateShipField('${s.id}','qty',this.value)">
+        <input class="ag-in" ${numInputAttrs()} placeholder="단가" value="${s.price||''}" oninput="updateShipField('${s.id}','price',this.value)">
+        <span class="ag-cell">${usd(u)}</span>
+        <span class="ag-cell">${won(k)} <span class="badge ${m.cls}" style="margin-left:4px;font-size:10px">${s.status}</span></span>
+        <button class="pc-del" onclick="deleteShipment('${s.id}')" title="삭제">×</button>
+      </div>`;
+    }).join('');
+    const editors=open?`<div class="ag-edit">${items.map(({it})=>estCard(it)).join('')}</div>`:'';
+    html+=`<div class="attr-group">
+      <div class="ag-head">
+        <div class="ag-chips">${attrChips(parts)}</div>
+        <span class="ag-meta">${items.length}건 · ${usd(sumUsd)}</span>
+        <button class="ag-edit-btn ${open?'on':''}" onclick="toggleAttrGroup('${gid}')" title="항목 정보·ERP 편집">${open?'접기':'✎ 편집'}</button>
+      </div>
+      <div class="ag-table ${open?'hide':''}">
+        <div class="ag-row ag-thead"><span></span><span>물량</span><span>단가</span><span>USD</span><span>원화 / 상태</span><span></span></div>
+        ${rows}
+      </div>
+      ${editors}
+    </div>`;
+  });
+  return html;
+}
 function planCard(owner,mi,idx,p){
   const isCost=p.product==='테라도 비용정산';
   const usdAmt=planEntryUsd(p);
