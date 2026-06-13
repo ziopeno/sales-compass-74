@@ -3699,35 +3699,39 @@ function editPeriodNote(months){
   return `<div class="ed-period-note">위 기간 선택 기준: <b>${revYear}년 ${label}</b></div>`;
 }
 function teamPlanEditor(owners,months=inputMonths()){
-  const rows=[];
+  const raw=[];
   owners.forEach(o=>months.forEach(mi=>{
     const arr=(settings.planByOwner[o]&&settings.planByOwner[o][revYear+'-'+(mi+1)])||[];
-    arr.forEach((p,idx)=>rows.push({owner:o,mi,idx,p}));
+    arr.forEach((p,idx)=>raw.push({owner:o,mi,idx,p}));
   }));
-  sortTeamRows(rows);
+  _revLastItems=raw;
+  const rows=applyUnifiedSort('rev',raw);
   const total=rows.reduce((a,r)=>a+planEntryUsd(r.p),0);
+  const body=renderGroupSections('rev',rows,items=>renderTeamPlanTable(items),items=>items.length+'건 · '+usd(items.reduce((a,r)=>a+planEntryUsd(r.p),0)));
   return editPeriodNote(months)+`<div class="team-entry">
     <div class="team-entry-head"><b>담당자별 계획 거래</b><span class="team-help">선택 기간 전체 ${rows.length}건 · 합계 ${usd(total)}</span></div>
-    ${sortBarHtml()}
-    ${renderTeamPlanTable(rows)}
+    ${unifiedSortBarHtml('rev',raw)}
+    ${body||`<div style="color:var(--ink-faint);text-align:center;padding:18px;font-size:12.5px">선택 기간에 계획 거래가 없습니다</div>`}
   </div>`;
 }
 function teamEstEditor(owners,months=inputMonths()){
-  const rows=[];
+  const raw=[];
   owners.forEach(o=>{
     state.forEach(s=>{
       if(s.owner!==o)return;
       const mi=shipmentMonth(s);
       if(!months.includes(mi))return;
-      rows.push({owner:o,mi,s});
+      raw.push({owner:o,mi,s});
     });
   });
-  sortTeamRows(rows);
+  _revLastItems=raw;
+  const rows=applyUnifiedSort('rev',raw);
   const total=rows.reduce((a,r)=>a+usdOf(r.s),0);
+  const body=renderGroupSections('rev',rows,items=>renderTeamEstTable(items),items=>items.length+'건 · '+usd(items.reduce((a,r)=>a+usdOf(r.s),0)));
   return editPeriodNote(months)+`<div class="team-entry">
     <div class="team-entry-head"><b>담당자별 추정(실적) 거래</b><span class="team-help">선택 기간 전체 ${rows.length}건 · 합계 ${usd(total)}</span></div>
-    ${sortBarHtml()}
-    ${renderTeamEstTable(rows)}
+    ${unifiedSortBarHtml('rev',raw)}
+    ${body||`<div style="color:var(--ink-faint);text-align:center;padding:18px;font-size:12.5px">선택 기간에 추정(실적) 거래가 없습니다</div>`}
   </div>`;
 }
 function renderTeamPlanTable(rows){
