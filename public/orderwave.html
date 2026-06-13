@@ -3483,12 +3483,12 @@ function renderRevenue(){if(!state||!settings||!users)return;rebuildCatalogs();s
 
     ${trendChart}
 
-    <details class="panel panel-plan sect-collapse">
+    <details class="panel panel-plan sect-collapse" open>
       <summary class="panel-head"><h3><span class="panel-tag plan"><span class="dot"></span>계획</span><span class="focus-owner">${inputScope}</span> <span class="input-scope-note">(입력된 항목을 바로 수정하거나 새로 추가)</span></h3><span class="sc-caret">▾</span></summary>
       ${planUI}
     </details>
 
-    <details class="panel panel-est sect-collapse">
+    <details class="panel panel-est sect-collapse" open>
       <summary class="panel-head"><h3><span class="panel-tag est"><span class="dot"></span>추정(실적)</span><span class="focus-owner">${inputScope}</span> <span class="input-scope-note">(입력된 항목을 바로 수정하거나 새로 추가)</span></h3><span class="sc-caret">▾</span></summary>
       ${estUI}
     </details>`;
