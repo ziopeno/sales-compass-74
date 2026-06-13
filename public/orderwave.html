@@ -14,16 +14,19 @@
 <link rel="manifest" href="manifest.json">
 <title>OrderWave</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 :root{
-  --navy-900:#071722;--navy-800:#0b2538;--navy-700:#123b55;
-  --paper:#eef3f4;--card:#fff;--ink:#142433;--ink-soft:#5d6c77;--ink-faint:#8a98a2;
-  --line:#dce6e8;--line-soft:#edf3f4;
-  --teal:#0eaa9a;--amber:#d98922;--red:#cf3b2e;--green:#2f9e57;--gold:#f4b81e;--violet:#6473d9;
-  --font-display:'Sora',system-ui,sans-serif;--font-body:'Outfit',system-ui,sans-serif;--font-mono:'Outfit',system-ui,sans-serif;
+  /* Maritime trade palette — deep ocean navy, teal current, parchment manifest, copper cargo */
+  --navy-900:#06182B;--navy-800:#0B2545;--navy-700:#13315C;
+  --paper:#F2EDDC;--card:#FFFFFF;--ink:#0B2545;--ink-soft:#46627A;--ink-faint:#8FA4B3;
+  --line:#E1DBC7;--line-soft:#EFEADB;
+  --teal:#0F766E;--teal-glow:#14B8A6;--teal-deep:#0B5550;
+  --copper:#B45309;--amber:#C2780B;--red:#B91C1C;--green:#047857;--gold:#B7791F;--violet:#6473d9;
+  --sand:#F2EDDC;--sand-warm:#E9E0C4;
+  --font-display:'Space Grotesk',system-ui,sans-serif;--font-body:'Inter',system-ui,sans-serif;--font-mono:'JetBrains Mono','Inter',system-ui,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-body);background:linear-gradient(180deg,#e7f0f2 0,#f5f7f5 42%,#eef3f4 100%);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+body{font-family:var(--font-body);background:linear-gradient(180deg,#EFE9D8 0,#F4EFE0 42%,#EFE9D8 100%);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
 body,input,select,textarea,button{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1,"zero" 0}
 .wrap{max-width:1180px;margin:0 auto;padding:0 20px 80px}
 body.locked .wrap{visibility:hidden}
