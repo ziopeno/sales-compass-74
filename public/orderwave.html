@@ -429,18 +429,26 @@ details.sect-collapse>summary.panel-head{display:flex;align-items:center;gap:10p
 .attr-table{border:1px solid var(--line-soft);border-radius:12px;background:#fff;margin:8px 0;overflow:auto}
 .attr-table .ag-row{display:grid;grid-template-columns:28px .9fr 1.1fr .8fr .8fr 1.2fr .7fr .7fr .9fr 1fr 28px 28px;gap:6px;align-items:center;padding:6px 10px;border-bottom:1px solid #f1f3ee;font-size:12.5px;min-width:980px}
 .attr-table.est-attr-table .ag-row{grid-template-columns:28px .9fr 1.1fr .8fr .8fr 1.2fr .7fr .7fr .9fr 1fr .8fr 28px 28px;min-width:1080px}
+.attr-table.plan-team-table .ag-row{grid-template-columns:28px .45fr .8fr .9fr 1.1fr .8fr .8fr 1.2fr .7fr .7fr .9fr 1fr 28px 28px;min-width:1120px}
+.attr-table.est-team-table .ag-row{grid-template-columns:28px .45fr .8fr .9fr 1.1fr .8fr .8fr 1.2fr .7fr .7fr .9fr 1fr .8fr 28px 28px;min-width:1220px}
 .attr-table .ag-row:last-child{border-bottom:none}
 .attr-table .ag-thead{background:#f7fafb;color:var(--ink-faint);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:7px 10px;position:sticky;top:0;z-index:1}
 .attr-table .ag-cell{font-family:var(--font-mono);font-size:12px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .attr-table .ag-cell.num{text-align:right;font-variant-numeric:tabular-nums}
 .attr-table .ag-cell.muted{color:var(--ink-faint)}
 .attr-table .ag-cell.ellip{min-width:0}
+.attr-table .ag-cell.mon{font-weight:700;color:var(--teal)}
 .attr-table .ag-in{width:100%;min-width:0;border:1px solid var(--line-soft);border-radius:6px;padding:4px 6px;font-family:var(--font-mono);font-size:12px;background:#fff;text-align:right}
 .attr-table .ag-sel{display:flex;justify-content:center}
 .attr-table .ag-edit-btn{font-size:11px;border:1px solid var(--line-soft);background:#fff;color:var(--ink-soft);border-radius:6px;padding:2px 6px;cursor:pointer;transition:.15s;width:28px;height:24px;display:flex;align-items:center;justify-content:center}
 .attr-table .ag-edit-btn:hover,.attr-table .ag-edit-btn.on{background:var(--teal);color:#fff;border-color:var(--teal)}
 .attr-table .ag-edit-row{padding:10px;background:#fafbf7;border-bottom:1px solid var(--line-soft)}
-@media(max-width:640px){.attr-table{font-size:11.5px}.attr-table .ag-row{min-width:760px}}
+.rev-sortbar{display:flex;align-items:center;gap:6px;padding:6px 2px;font-size:12px;color:var(--ink-faint);flex-wrap:wrap}
+.rev-sortbar .rs-btn{font-size:11.5px;padding:4px 9px;border-radius:999px;border:1px solid var(--line-soft);background:#fff;color:var(--ink-soft);cursor:pointer;transition:.15s}
+.rev-sortbar .rs-btn:hover{border-color:var(--teal);color:var(--teal)}
+.rev-sortbar .rs-btn.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+.rev-sortbar .rs-dir{margin-left:4px;font-weight:700;color:var(--ink)}
+@media(max-width:640px){.attr-table{font-size:11.5px}.attr-table .ag-row{min-width:760px}.attr-table.plan-team-table .ag-row{min-width:900px}.attr-table.est-team-table .ag-row{min-width:1000px}}
 .status-item{border:1px solid var(--line-soft);background:#fff;border-radius:12px;padding:12px;min-width:0}
 .status-item-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}
 .status-item-name{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1532,6 +1540,27 @@ let publicAllowlist=null;
 let saveChain=Promise.resolve(),ignoreRemoteUntil=0,hasLocalSave=false,erpSaveTimers={};
 let revSel=null,planMonth=today.getMonth(),estMonth=today.getMonth(),rateMonth=today.getMonth(),revDetails=false,revRateOpen=false;
 let expAttr=new Set();
+let revSort={key:'owner',dir:'asc'};
+function setRevSort(key,dir){revSort.key=key;if(dir)revSort.dir=dir;renderRevenue();}
+function toggleRevSortDir(){revSort.dir=revSort.dir==='asc'?'desc':'asc';renderRevenue();}
+function sortBarHtml(){
+  const k=revSort.key,d=revSort.dir;
+  return `<div class="rev-sortbar">정렬:
+    <button class="rs-btn ${k==='owner'?'on':''}" onclick="setRevSort('owner')">담당자</button>
+    <button class="rs-btn ${k==='country'?'on':''}" onclick="setRevSort('country')">국가</button>
+    <button class="rs-btn rs-dir" onclick="toggleRevSortDir()" title="정렬 방향">${d==='asc'?'▲ 오름':'▼ 내림'}</button>
+  </div>`;
+}
+function sortTeamRows(rows){
+  const k=revSort.key,dir=revSort.dir==='asc'?1:-1;
+  const get=r=>k==='owner'?(r.owner||''):((r.p&&r.p.country)||(r.s&&r.s.country)||'');
+  rows.sort((a,b)=>{
+    if(a.mi!==b.mi)return a.mi-b.mi;
+    const va=get(a),vb=get(b);
+    return va.localeCompare(vb,'ko')*dir;
+  });
+  return rows;
+}
 function attrKeyP(p){return [p.country||'',p.client||'',p.cat1||'',p.cat2||'',p.product||''].join('§');}
 function attrKeyE(s){return [s.country||'',s.client||'',s.cat1||'',s.cat2||'',s.item||''].join('§');}
 function groupByFn(arr,fn){const m=new Map();arr.forEach((it,i)=>{const k=fn(it,i);if(!m.has(k))m.set(k,[]);m.get(k).push({it,i});});return m;}
@@ -3564,17 +3593,96 @@ function editPeriodNote(months){
   return `<div class="ed-period-note">위 기간 선택 기준: <b>${revYear}년 ${label}</b></div>`;
 }
 function teamPlanEditor(owners,months=inputMonths()){
-  const cnt=owners.reduce((a,o)=>a+months.reduce((n,mi)=>n+(((settings.planByOwner[o]&&settings.planByOwner[o][revYear+'-'+(mi+1)])||[]).length),0),0);
+  const rows=[];
+  owners.forEach(o=>months.forEach(mi=>{
+    const arr=(settings.planByOwner[o]&&settings.planByOwner[o][revYear+'-'+(mi+1)])||[];
+    arr.forEach((p,idx)=>rows.push({owner:o,mi,idx,p}));
+  }));
+  sortTeamRows(rows);
+  const total=rows.reduce((a,r)=>a+planEntryUsd(r.p),0);
   return editPeriodNote(months)+`<div class="team-entry">
-    <div class="team-entry-head"><b>담당자별 계획 거래</b><span class="team-help">선택 기간의 전체 담당자 계획 ${cnt}건을 월 기준으로 표시합니다.</span></div>
-    <div class="team-month-editors">${months.map(mi=>teamPlanMonthBlock(owners,mi)).join('')}</div>
+    <div class="team-entry-head"><b>담당자별 계획 거래</b><span class="team-help">선택 기간 전체 ${rows.length}건 · 합계 ${usd(total)}</span></div>
+    ${sortBarHtml()}
+    ${renderTeamPlanTable(rows)}
   </div>`;
 }
 function teamEstEditor(owners,months=inputMonths()){
-  const cnt=owners.reduce((a,o)=>a+state.filter(s=>s.owner===o&&months.includes(shipmentMonth(s))).length,0);
+  const rows=[];
+  owners.forEach(o=>{
+    state.forEach(s=>{
+      if(s.owner!==o)return;
+      const mi=shipmentMonth(s);
+      if(!months.includes(mi))return;
+      rows.push({owner:o,mi,s});
+    });
+  });
+  sortTeamRows(rows);
+  const total=rows.reduce((a,r)=>a+usdOf(r.s),0);
   return editPeriodNote(months)+`<div class="team-entry">
-    <div class="team-entry-head"><b>담당자별 추정(실적) 거래</b><span class="team-help">선택 기간의 전체 담당자 추정(실적) ${cnt}건을 월 기준으로 표시합니다.</span></div>
-    <div class="team-month-editors">${months.map(mi=>teamEstMonthBlock(owners,mi)).join('')}</div>
+    <div class="team-entry-head"><b>담당자별 추정(실적) 거래</b><span class="team-help">선택 기간 전체 ${rows.length}건 · 합계 ${usd(total)}</span></div>
+    ${sortBarHtml()}
+    ${renderTeamEstTable(rows)}
+  </div>`;
+}
+function renderTeamPlanTable(rows){
+  if(!rows.length)return `<div style="color:var(--ink-faint);text-align:center;padding:18px;font-size:12.5px">선택 기간에 계획 거래가 없습니다</div>`;
+  const body=rows.map(({owner,mi,idx,p})=>{
+    const isCost=p.product==='테라도 비용정산';
+    const u=planEntryUsd(p),k=planEntryKrw(p,mi);
+    const gid='pe|'+owner+'|'+mi+'|'+idx;
+    const open=expAttr.has(gid);
+    const editor=open?`<div class="ag-edit-row">${planCard(owner,mi,idx,p)}</div>`:'';
+    return `<div class="ag-row" data-row>
+      <label class="ag-sel"><input type="checkbox" data-plan-sel="${owner}|${mi}|${idx}" ${isAdmin()?'':'disabled'} onchange="onRevSelToggle()"></label>
+      <span class="ag-cell mon">${mi+1}월</span>
+      <span class="ag-cell ellip" title="${escAttr(owner)}">${owner}</span>
+      <span class="ag-cell ellip" title="${escAttr(p.country||'')}">${p.country||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(p.client||'')}">${p.client||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(p.cat1||'')}">${p.cat1||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(p.cat2||'')}">${p.cat2||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(p.product||'')}">${p.product||'—'}</span>
+      ${isCost
+        ? `<span class="ag-cell muted">—</span><span class="ag-cell muted">USD직접</span><input class="ag-in" ${numInputAttrs()} placeholder="USD" value="${p.directUsd||''}" oninput="updatePlan('${owner}',${mi},${idx},'directUsd',this.value)">`
+        : `<input class="ag-in" ${numInputAttrs()} placeholder="0" value="${p.qty||''}" oninput="updatePlan('${owner}',${mi},${idx},'qty',this.value)"><input class="ag-in" ${numInputAttrs()} placeholder="0" value="${p.price||''}" oninput="updatePlan('${owner}',${mi},${idx},'price',this.value)"><span class="ag-cell num">${usd(u)}</span>`}
+      <span class="ag-cell num">${won(k)}</span>
+      <button class="ag-edit-btn ${open?'on':''}" onclick="toggleAttrGroup('${gid}')" title="속성 편집">${open?'접기':'✎'}</button>
+      <button class="pc-del" onclick="removePlanRow('${owner}',${mi},${idx})" title="삭제">×</button>
+    </div>${editor}`;
+  }).join('');
+  return `<div class="attr-table plan-team-table">
+    <div class="ag-row ag-thead"><span></span><span>월</span><span>담당자</span><span>국가</span><span>거래처</span><span>구분1</span><span>구분2</span><span>제품</span><span>물량</span><span>단가</span><span>USD</span><span>원화</span><span></span><span></span></div>
+    ${body}
+  </div>`;
+}
+function renderTeamEstTable(rows){
+  if(!rows.length)return `<div style="color:var(--ink-faint);text-align:center;padding:18px;font-size:12.5px">선택 기간에 추정(실적) 거래가 없습니다</div>`;
+  const body=rows.map(({owner,mi,s})=>{
+    const u=usdOf(s),m=META[s.status];
+    const k=Math.round(u*estRateFor(mi));
+    const gid='ee|'+s.id;
+    const open=expAttr.has(gid);
+    const editor=open?`<div class="ag-edit-row">${estCard(s)}</div>`:'';
+    return `<div class="ag-row" data-row>
+      <label class="ag-sel"><input type="checkbox" data-est-sel="${s.id}" onchange="onRevSelToggle()"></label>
+      <span class="ag-cell mon">${mi+1}월</span>
+      <span class="ag-cell ellip" title="${escAttr(owner)}">${owner}</span>
+      <span class="ag-cell ellip" title="${escAttr(s.country||'')}">${s.country||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(s.client||'')}">${s.client||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(s.cat1||'')}">${s.cat1||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(s.cat2||'')}">${s.cat2||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(s.item||'')}">${s.item||'—'}</span>
+      <input class="ag-in" ${numInputAttrs()} placeholder="0" value="${s.qty||''}" oninput="updateShipField('${s.id}','qty',this.value)">
+      <input class="ag-in" ${numInputAttrs()} placeholder="0" value="${s.price||''}" oninput="updateShipField('${s.id}','price',this.value)">
+      <span class="ag-cell num">${usd(u)}</span>
+      <span class="ag-cell num">${won(k)}</span>
+      <span class="ag-cell"><span class="badge ${m.cls}" style="font-size:10px">${s.status}</span></span>
+      <button class="ag-edit-btn ${open?'on':''}" onclick="toggleAttrGroup('${gid}')" title="속성·ERP 편집">${open?'접기':'✎'}</button>
+      <button class="pc-del" onclick="deleteShipment('${s.id}')" title="삭제">×</button>
+    </div>${editor}`;
+  }).join('');
+  return `<div class="attr-table est-team-table">
+    <div class="ag-row ag-thead"><span></span><span>월</span><span>담당자</span><span>국가</span><span>거래처</span><span>구분1</span><span>구분2</span><span>제품</span><span>물량</span><span>단가</span><span>USD</span><span>원화</span><span>상태</span><span></span><span></span></div>
+    ${body}
   </div>`;
 }
 function teamPlanMonthBlock(owners,mi){
