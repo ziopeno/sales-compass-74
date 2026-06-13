@@ -3593,17 +3593,96 @@ function editPeriodNote(months){
   return `<div class="ed-period-note">위 기간 선택 기준: <b>${revYear}년 ${label}</b></div>`;
 }
 function teamPlanEditor(owners,months=inputMonths()){
-  const cnt=owners.reduce((a,o)=>a+months.reduce((n,mi)=>n+(((settings.planByOwner[o]&&settings.planByOwner[o][revYear+'-'+(mi+1)])||[]).length),0),0);
+  const rows=[];
+  owners.forEach(o=>months.forEach(mi=>{
+    const arr=(settings.planByOwner[o]&&settings.planByOwner[o][revYear+'-'+(mi+1)])||[];
+    arr.forEach((p,idx)=>rows.push({owner:o,mi,idx,p}));
+  }));
+  sortTeamRows(rows);
+  const total=rows.reduce((a,r)=>a+planEntryUsd(r.p),0);
   return editPeriodNote(months)+`<div class="team-entry">
-    <div class="team-entry-head"><b>담당자별 계획 거래</b><span class="team-help">선택 기간의 전체 담당자 계획 ${cnt}건을 월 기준으로 표시합니다.</span></div>
-    <div class="team-month-editors">${months.map(mi=>teamPlanMonthBlock(owners,mi)).join('')}</div>
+    <div class="team-entry-head"><b>담당자별 계획 거래</b><span class="team-help">선택 기간 전체 ${rows.length}건 · 합계 ${usd(total)}</span></div>
+    ${sortBarHtml()}
+    ${renderTeamPlanTable(rows)}
   </div>`;
 }
 function teamEstEditor(owners,months=inputMonths()){
-  const cnt=owners.reduce((a,o)=>a+state.filter(s=>s.owner===o&&months.includes(shipmentMonth(s))).length,0);
+  const rows=[];
+  owners.forEach(o=>{
+    state.forEach(s=>{
+      if(s.owner!==o)return;
+      const mi=shipmentMonth(s);
+      if(!months.includes(mi))return;
+      rows.push({owner:o,mi,s});
+    });
+  });
+  sortTeamRows(rows);
+  const total=rows.reduce((a,r)=>a+usdOf(r.s),0);
   return editPeriodNote(months)+`<div class="team-entry">
-    <div class="team-entry-head"><b>담당자별 추정(실적) 거래</b><span class="team-help">선택 기간의 전체 담당자 추정(실적) ${cnt}건을 월 기준으로 표시합니다.</span></div>
-    <div class="team-month-editors">${months.map(mi=>teamEstMonthBlock(owners,mi)).join('')}</div>
+    <div class="team-entry-head"><b>담당자별 추정(실적) 거래</b><span class="team-help">선택 기간 전체 ${rows.length}건 · 합계 ${usd(total)}</span></div>
+    ${sortBarHtml()}
+    ${renderTeamEstTable(rows)}
+  </div>`;
+}
+function renderTeamPlanTable(rows){
+  if(!rows.length)return `<div style="color:var(--ink-faint);text-align:center;padding:18px;font-size:12.5px">선택 기간에 계획 거래가 없습니다</div>`;
+  const body=rows.map(({owner,mi,idx,p})=>{
+    const isCost=p.product==='테라도 비용정산';
+    const u=planEntryUsd(p),k=planEntryKrw(p,mi);
+    const gid='pe|'+owner+'|'+mi+'|'+idx;
+    const open=expAttr.has(gid);
+    const editor=open?`<div class="ag-edit-row">${planCard(owner,mi,idx,p)}</div>`:'';
+    return `<div class="ag-row" data-row>
+      <label class="ag-sel"><input type="checkbox" data-plan-sel="${owner}|${mi}|${idx}" ${isAdmin()?'':'disabled'} onchange="onRevSelToggle()"></label>
+      <span class="ag-cell mon">${mi+1}월</span>
+      <span class="ag-cell ellip" title="${escAttr(owner)}">${owner}</span>
+      <span class="ag-cell ellip" title="${escAttr(p.country||'')}">${p.country||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(p.client||'')}">${p.client||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(p.cat1||'')}">${p.cat1||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(p.cat2||'')}">${p.cat2||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(p.product||'')}">${p.product||'—'}</span>
+      ${isCost
+        ? `<span class="ag-cell muted">—</span><span class="ag-cell muted">USD직접</span><input class="ag-in" ${numInputAttrs()} placeholder="USD" value="${p.directUsd||''}" oninput="updatePlan('${owner}',${mi},${idx},'directUsd',this.value)">`
+        : `<input class="ag-in" ${numInputAttrs()} placeholder="0" value="${p.qty||''}" oninput="updatePlan('${owner}',${mi},${idx},'qty',this.value)"><input class="ag-in" ${numInputAttrs()} placeholder="0" value="${p.price||''}" oninput="updatePlan('${owner}',${mi},${idx},'price',this.value)"><span class="ag-cell num">${usd(u)}</span>`}
+      <span class="ag-cell num">${won(k)}</span>
+      <button class="ag-edit-btn ${open?'on':''}" onclick="toggleAttrGroup('${gid}')" title="속성 편집">${open?'접기':'✎'}</button>
+      <button class="pc-del" onclick="removePlanRow('${owner}',${mi},${idx})" title="삭제">×</button>
+    </div>${editor}`;
+  }).join('');
+  return `<div class="attr-table plan-team-table">
+    <div class="ag-row ag-thead"><span></span><span>월</span><span>담당자</span><span>국가</span><span>거래처</span><span>구분1</span><span>구분2</span><span>제품</span><span>물량</span><span>단가</span><span>USD</span><span>원화</span><span></span><span></span></div>
+    ${body}
+  </div>`;
+}
+function renderTeamEstTable(rows){
+  if(!rows.length)return `<div style="color:var(--ink-faint);text-align:center;padding:18px;font-size:12.5px">선택 기간에 추정(실적) 거래가 없습니다</div>`;
+  const body=rows.map(({owner,mi,s})=>{
+    const u=usdOf(s),m=META[s.status];
+    const k=Math.round(u*estRateFor(mi));
+    const gid='ee|'+s.id;
+    const open=expAttr.has(gid);
+    const editor=open?`<div class="ag-edit-row">${estCard(s)}</div>`:'';
+    return `<div class="ag-row" data-row>
+      <label class="ag-sel"><input type="checkbox" data-est-sel="${s.id}" onchange="onRevSelToggle()"></label>
+      <span class="ag-cell mon">${mi+1}월</span>
+      <span class="ag-cell ellip" title="${escAttr(owner)}">${owner}</span>
+      <span class="ag-cell ellip" title="${escAttr(s.country||'')}">${s.country||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(s.client||'')}">${s.client||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(s.cat1||'')}">${s.cat1||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(s.cat2||'')}">${s.cat2||'—'}</span>
+      <span class="ag-cell ellip" title="${escAttr(s.item||'')}">${s.item||'—'}</span>
+      <input class="ag-in" ${numInputAttrs()} placeholder="0" value="${s.qty||''}" oninput="updateShipField('${s.id}','qty',this.value)">
+      <input class="ag-in" ${numInputAttrs()} placeholder="0" value="${s.price||''}" oninput="updateShipField('${s.id}','price',this.value)">
+      <span class="ag-cell num">${usd(u)}</span>
+      <span class="ag-cell num">${won(k)}</span>
+      <span class="ag-cell"><span class="badge ${m.cls}" style="font-size:10px">${s.status}</span></span>
+      <button class="ag-edit-btn ${open?'on':''}" onclick="toggleAttrGroup('${gid}')" title="속성·ERP 편집">${open?'접기':'✎'}</button>
+      <button class="pc-del" onclick="deleteShipment('${s.id}')" title="삭제">×</button>
+    </div>${editor}`;
+  }).join('');
+  return `<div class="attr-table est-team-table">
+    <div class="ag-row ag-thead"><span></span><span>월</span><span>담당자</span><span>국가</span><span>거래처</span><span>구분1</span><span>구분2</span><span>제품</span><span>물량</span><span>단가</span><span>USD</span><span>원화</span><span>상태</span><span></span><span></span></div>
+    ${body}
   </div>`;
 }
 function teamPlanMonthBlock(owners,mi){
