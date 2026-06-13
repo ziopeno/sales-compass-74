@@ -411,6 +411,16 @@ input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,1
 .status-board-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .status-board-title{font-family:var(--font-display);font-size:14px;font-weight:700}
 .status-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:9px}
+.status-collapse{border:1px solid var(--line-soft);border-radius:12px;background:#fff;overflow:hidden}
+.status-collapse>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;color:var(--ink-soft);transition:.15s}
+.status-collapse>summary::-webkit-details-marker{display:none}
+.status-collapse>summary:hover{background:#f7fafb}
+.status-collapse[open]>summary{border-bottom:1px solid var(--line-soft);background:#f7fafb}
+.status-collapse .sc-label{font-weight:700;color:var(--ink);font-family:var(--font-display)}
+.status-collapse .sc-count{font-family:var(--font-mono);font-size:11.5px;color:#fff;background:var(--teal);border-radius:999px;padding:2px 9px}
+.status-collapse .sc-caret{margin-left:auto;color:var(--ink-faint);font-size:13px;transition:.18s}
+.status-collapse[open]>summary .sc-caret{transform:rotate(180deg)}
+.status-collapse .status-list{padding:12px}
 .status-item{border:1px solid var(--line-soft);background:#fff;border-radius:12px;padding:12px;min-width:0}
 .status-item-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}
 .status-item-name{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -3278,6 +3288,7 @@ function renderRevenue(){if(!state||!settings||!users)return;rebuildCatalogs();s
     return `<tr><td>${k}</td><td>${planCell}</td><td style="color:var(--teal)">${won(g.estKrw)}<span class="usd">${usd(g.estUsd)}</span></td><td>${achCell}</td></tr>`;
   }).join(''):`<tr><td colspan="4" style="text-align:center;color:var(--ink-faint);padding:18px">데이터 없음</td></tr>`;
   const estPct=hasPlan?Math.round(tot.est/tot.plan*100):0;
+  const statusCount=brk.length;
   const statusCards=brk.length?brk.slice(0,12).map(([k,g],i)=>`<div class="bullet-click" onclick="openRevDrill('${revDim}','${encodeURIComponent(k)}')" title="클릭하면 ${escAttr(k)} 상세를 꺼내봅니다">${revBulletItem(k,g.planKrw,g.estKrw,i,g.lyKrw||0)}</div>`).join('')
     :`<div class="status-empty">선택 기간에 입력된 계획 또는 추정(실적)이 없습니다.</div>`;
   const teamGauge=revGaugeHtml(estPct,tot,hasPlan,fx);
@@ -3388,7 +3399,10 @@ function renderRevenue(){if(!state||!settings||!users)return;rebuildCatalogs();s
           <div><div class="status-board-title">${dims.find(d=>d[0]===revDim)[1]}별 달성률</div><div class="analysis-note">트랙=계획(목표) · 채움=추정(실적) · 항목 클릭 → 상세 꺼내보기</div></div>
           <div class="dim-seg">${dimSeg}</div>
         </div>
-        <div class="status-list">${statusCards}</div>
+        <details class="status-collapse"${revDim!=='owner'?' open':''}>
+          <summary><span class="sc-label">${dims.find(d=>d[0]===revDim)[1]}별 상세</span><span class="sc-count">${statusCount||0}개 항목</span><span class="sc-caret">▾</span></summary>
+          <div class="status-list">${statusCards}</div>
+        </details>
       </div>
       ${revDetails?`<div class="detail-stack">
         <div class="analysis-section">
