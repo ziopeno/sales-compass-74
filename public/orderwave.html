@@ -3629,13 +3629,15 @@ function teamEstEditor(owners,months=inputMonths()){
 }
 function renderTeamPlanTable(rows){
   if(!rows.length)return `<div style="color:var(--ink-faint);text-align:center;padding:18px;font-size:12.5px">선택 기간에 계획 거래가 없습니다</div>`;
+  let prevMi=null;
   const body=rows.map(({owner,mi,idx,p})=>{
     const isCost=p.product==='테라도 비용정산';
     const u=planEntryUsd(p),k=planEntryKrw(p,mi);
     const gid='pe|'+owner+'|'+mi+'|'+idx;
     const open=expAttr.has(gid);
     const editor=open?`<div class="ag-edit-row">${planCard(owner,mi,idx,p)}</div>`:'';
-    return `<div class="ag-row" data-row>
+    const isStart=mi!==prevMi;prevMi=mi;
+    return `<div class="ag-row ${isStart?'mon-start':''}" data-row>
       <label class="ag-sel"><input type="checkbox" data-plan-sel="${owner}|${mi}|${idx}" ${isAdmin()?'':'disabled'} onchange="onRevSelToggle()"></label>
       <span class="ag-cell mon">${mi+1}월</span>
       <span class="ag-cell ellip" title="${escAttr(owner)}">${owner}</span>
