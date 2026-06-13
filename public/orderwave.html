@@ -1070,45 +1070,59 @@ input:disabled{background:#f1ede2;color:var(--ink-faint);cursor:not-allowed}
   --rev-yoy-bg:#eef0fb;
 }
 
-/* ── 상단 4-카드(계획/추정/실적/차질) ───────────────────────── */
+/* ── 상단 매출 KPI 카드 — 미니멀 리디자인 (상단 컬러 스트라이프) ───── */
 .rcard{
-  border-radius:16px;padding:18px 18px 16px;
-  background:linear-gradient(180deg,#fff, #fcfaf6);
-  box-shadow:0 1px 0 rgba(20,36,51,.02), 0 10px 24px -22px rgba(20,36,51,.18);
-  transition:transform .18s ease, box-shadow .18s ease;
+  background:#fff !important;
+  border:1px solid var(--line) !important;
+  border-radius:14px;
+  padding:18px 20px 16px;
+  box-shadow:0 1px 0 rgba(20,36,51,.02),0 8px 22px -18px rgba(20,36,51,.18);
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  overflow:hidden;
 }
-.rcard:hover{transform:translateY(-1px);box-shadow:0 14px 32px -22px rgba(20,36,51,.28)}
-.rcard::before{width:4px;border-radius:0 4px 4px 0}
-.rcard.plan{background:linear-gradient(180deg,#fdf9ec,#fffdf6);border-color:var(--rev-plan-soft)}
-.rcard.plan::before{background:var(--rev-plan)}
-.rcard.est {background:linear-gradient(180deg,#eefaf7,#f7fdfc);border-color:var(--rev-est-soft)}
-.rcard.est::before {background:var(--rev-est)}
-.rcard.act {background:linear-gradient(180deg,#edf8f0,#f6fbf7);border-color:var(--rev-act-soft)}
-.rcard.act::before {background:var(--rev-act)}
-.rcard.gap {background:linear-gradient(180deg,#fff5f3,#fffaf9);border-color:#f1cfca}
-.rcard.gap::before {background:var(--rev-gap-neg)}
-.rcard.yoy {background:linear-gradient(180deg,#f1f3fc,#f9fafe);border-color:#d6dbf2}
-.rcard.yoy::before {background:var(--rev-yoy)}
+.rcard:hover{transform:translateY(-1px);border-color:#cbd5e1;box-shadow:0 1px 0 rgba(20,36,51,.03),0 14px 30px -20px rgba(20,36,51,.25)}
+/* 좌측 바 → 상단 컬러 스트라이프로 전환 */
+.rcard::before{
+  content:"";position:absolute;top:0;left:0;right:0;bottom:auto;
+  width:auto;height:3px;border-radius:0;background:var(--line);
+}
+.rcard::after{display:none}
+.rcard.plan::before{background:#C9A84C}
+.rcard.est::before {background:#0D9488}
+.rcard.act::before {background:#10B981}
+.rcard.gap::before {background:#EF4444}
+.rcard.yoy::before {background:#6366F1}
 
-/* 라벨 위에 작은 카테고리 배지 자동 부착 */
+/* 라벨 — 작은 캡션 (배경 칩 제거) */
 .rcard .lab{
   display:inline-flex;align-items:center;gap:6px;
-  font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;
-  color:var(--ink-soft);
-  background:rgba(255,255,255,.7);border:1px solid var(--line-soft);
-  padding:3px 8px;border-radius:99px;
+  font-family:var(--font-display);
+  font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;
+  color:#64748b;
+  background:transparent;border:0;padding:0;border-radius:0;
 }
-.rcard .lab::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ink-faint)}
-.rcard.plan .lab::before{background:var(--rev-plan)}
-.rcard.est  .lab::before{background:var(--rev-est)}
-.rcard.act  .lab::before{background:var(--rev-act)}
-.rcard.gap  .lab::before{background:var(--rev-gap-neg)}
-.rcard.yoy  .lab::before{background:var(--rev-yoy)}
-.rcard .val{font-size:24px;margin-top:10px;letter-spacing:-.01em}
-.rcard .sub{margin-top:5px}
-.rcard.plan .val{color:#3a2f12}
-.rcard.est  .val{color:#0f6e62}
-.rcard.act  .val{color:#1f6e3d}
+.rcard .lab::before{content:"";width:6px;height:6px;border-radius:50%;background:#94a3b8;border:0;position:static}
+.rcard.plan .lab::before{background:#C9A84C}
+.rcard.est  .lab::before{background:#0D9488}
+.rcard.act  .lab::before{background:#10B981}
+.rcard.gap  .lab::before{background:#EF4444}
+.rcard.yoy  .lab::before{background:#6366F1}
+
+/* 메인 숫자 — 모노 폰트로 가독성 ↑ */
+.rcard .val{
+  font-family:var(--font-mono);
+  font-size:26px;font-weight:700;margin-top:10px;line-height:1.15;letter-spacing:-.01em;
+  color:#0f172a;
+  font-variant-numeric:tabular-nums;
+}
+.rcard .sub{font-family:var(--font-mono);font-size:12px;color:#94a3b8;margin-top:6px;font-variant-numeric:tabular-nums}
+.rcard .sub b{color:#475569;font-weight:600}
+.rcard.plan .val{color:#0f172a}
+.rcard.est  .val{color:#0D9488}
+.rcard.act  .val{color:#047857}
+.rcard.gap  .val.neg{color:#DC2626}
+.rcard.gap  .val.pos{color:#047857}
+
 
 /* 차질 칩 — 양/음 명확히 */
 .gap-chip{
